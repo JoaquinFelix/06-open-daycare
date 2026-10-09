@@ -4,14 +4,17 @@ import { navItems } from "@/data/nav";
 
 type SidebarProps = {
   pathname: string;
+  /** El drawer móvil debe cerrarse al seguir cualquier link */
+  onNavigate?: () => void;
 };
 
 // Contenido del panel lateral. El <aside> o el drawer lo envuelve AppShell.
-export function Sidebar({ pathname }: SidebarProps) {
+export function Sidebar({ pathname, onNavigate }: SidebarProps) {
   return (
     <div className="flex h-full flex-col px-4 py-6">
       <Link
         href="/"
+        onClick={onNavigate}
         className="flex items-center gap-[11px] pt-1 pr-2 pb-[22px] pl-2"
       >
         <span className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-xl bg-[linear-gradient(155deg,#F8C3A8,#F2937A)] text-white">
@@ -29,6 +32,7 @@ export function Sidebar({ pathname }: SidebarProps) {
 
       <Link
         href="/crear-publicacion"
+        onClick={onNavigate}
         className="mb-[18px] flex w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] p-3 text-[14.5px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(238,129,100,.75)]"
       >
         <Icon name="plus" size={17} />
@@ -43,6 +47,7 @@ export function Sidebar({ pathname }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={
                 active
@@ -72,6 +77,7 @@ export function Sidebar({ pathname }: SidebarProps) {
           </span>
           <Link
             href="/login"
+            onClick={onNavigate}
             title="Cerrar sesión"
             className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-cream text-ink-soft hover:text-primary"
           >
