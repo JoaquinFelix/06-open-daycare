@@ -10,7 +10,9 @@ export type IconName =
   | "megaphone"
   | "logout"
   | "menu"
-  | "close";
+  | "close"
+  | "sun"
+  | "image";
 
 export type NavItem = { href: string; label: string; icon: IconName };
 
