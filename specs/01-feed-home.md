@@ -1,6 +1,6 @@
 # SPEC 01 — Home (feed) fiel al mockup
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** —
 > **Date:** 2026-10-09
 > **Objective:** Replicar `references/pantallas/feed.dc.html` como Home (`/`) con estilo idéntico, un shell compartido de sidebar y rutas placeholder para el resto de pantallas.
