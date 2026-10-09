@@ -8,6 +8,9 @@
   --color-ink: #3f362e;
   --color-ink-soft: #94887b;
   --color-ink-muted: #a89a8b;
+  --color-ink-body: #4a4038;
+  --color-label: #8a7c6d;
+  --color-rule: #e7dac8;
   --color-nav-idle: #6e6359;
   --color-accent: #f2937a;
   --color-tint: #fbe3d8;
@@ -21,6 +24,12 @@
 }
 
 @layer base {
+  /* El mockup no fija line-height en ningún lado: hereda el default del
+     navegador. Sin esto Tailwind forzaría 1.5 y el ritmo vertical se desvía. */
+  html {
+    line-height: normal;
+  }
+
   body {
     @apply bg-cream font-body text-ink antialiased;
   }
