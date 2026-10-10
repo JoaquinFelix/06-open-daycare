@@ -49,3 +49,17 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - `spec` y `spec-impl` instalados vía `skills-lock.json` (fuente: `klerith/fernando-skills`) para
   desarrollo de features guiado por specs.
+
+## Agentes
+
+- `spec-checker` (`.opencode/agents/spec-checker.md`) — subagente que verifica los criterios de
+  aceptación de un spec en `specs/`:
+  - Marca `- [x]` solo con evidencia real: build, typecheck, lint, render con Playwright y
+    comparación contra los mockups de `references/pantallas/`.
+  - Usa `npx eslint app` (no `npm run lint`, que falla por errores preexistentes) y
+    `npx tsc --noEmit`; no inventa comandos de test.
+  - Editá únicamente `specs/*.md`: nunca toca código de la app, `references/` ni hace commit.
+  - Propone cambiar el `Status` del spec a `Implemented` solo si todos los criterios pasan, y
+    espera confirmación explícita antes de editar esa línea.
+  - Invocación: pasá el nombre del spec (`01-feed-home`), el número (`01`) o la ruta
+    (`specs/01-feed-home.md`); vacío lista `specs/` y pregunta cuál verificar.
