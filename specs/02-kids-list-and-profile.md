@@ -1,6 +1,6 @@
 # SPEC 02 — Lista y perfil de niños fieles a los mockups
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-10
 > **Objective:** Replicar `references/pantallas/ninos.dc.html` en `/kids` y `references/pantallas/perfil-nino.dc.html` en `/kids/[id]` con datos mock por niño, búsqueda en cliente y rutas placeholder para las pantallas fuera de alcance.
@@ -99,19 +99,20 @@ No se agregan tokens nuevos: los colores de avatar/pill van inline como en `Post
 
 ## Acceptance criteria
 
-- [ ] `npm run build` y `npx tsc --noEmit` terminan sin errores.
-- [ ] `npx eslint app components data` pasa sin errores.
-- [ ] `/kids` muestra "GESTIÓN", "Niños", el botón "Agregar niño", el buscador, "SALA SOLES · 8 niños" y las 8 tarjetas en grilla de 2 columnas.
-- [ ] Cada tarjeta muestra avatar (color e inicial exactos), nombre, subtítulo y badge o chevron según la tabla.
-- [ ] Escribir en el buscador filtra las tarjetas por nombre en cliente; sin coincidencias muestra un estado vacío.
-- [ ] Clic en una tarjeta navega a `/kids/<id>`.
-- [ ] `/kids/mateo` renderiza "Volver a Niños", avatar 84px, "Mateo Fernández", "3 años · Sala Soles", "Editar", el bloque de alergias, la ficha (12 mar 2022 / Soles / feb 2025), "Resumen del día" y los padres Lucía (ACTIVA) y Diego (PENDIENTE).
-- [ ] Los 8 perfiles se prerenderizan estáticamente; un id inexistente devuelve 404.
-- [ ] El ítem "Niños" del sidebar aparece activo en `/kids` y `/kids/[id]`.
-- [ ] `/kids/new`, `/kids/mateo/summary` y `/kids/mateo/link-parent` responden 200 con el placeholder visual.
-- [ ] "Cerrar sesión" apunta a `/login`.
-- [ ] Por debajo de 768px la grilla pasa a 1 columna y el perfil apila columnas, sin alterar el layout a 1280px.
-- [ ] Los screenshots a 1280px coinciden con `references/pantallas/ninos.dc.html` y `perfil-nino.dc.html`.
+- [x] `npm run build` y `npx tsc --noEmit` terminan sin errores.
+- [x] `npx eslint app components data` pasa sin errores.
+- [x] `/kids` muestra "GESTIÓN", "Niños", el botón "Agregar niño", el buscador, "SALA SOLES · 8 niños" y las 8 tarjetas en grilla de 2 columnas.
+- [x] Cada tarjeta muestra avatar (color e inicial exactos), nombre, subtítulo y badge o chevron según la tabla.
+- [x] Escribir en el buscador filtra las tarjetas por nombre en cliente; sin coincidencias muestra un estado vacío.
+- [x] Clic en una tarjeta navega a `/kids/<id>`.
+- [x] `/kids/mateo` renderiza "Volver a Niños", avatar 84px, "Mateo Fernández", "3 años · Sala Soles", "Editar", el bloque de alergias, la ficha (12 mar 2022 / Soles / feb 2025), "Resumen del día" y los padres Lucía (ACTIVA) y Diego (PENDIENTE).
+- [x] Los 8 perfiles se prerenderizan estáticamente; un id inexistente devuelve 404.
+- [x] El ítem "Niños" del sidebar aparece activo en `/kids` y `/kids/[id]`.
+- [x] `/kids/new`, `/kids/mateo/summary` y `/kids/mateo/link-parent` responden 200 con el placeholder visual.
+- [x] "Cerrar sesión" apunta a `/login`.
+- [x] Por debajo de 768px la grilla pasa a 1 columna y el perfil apila columnas, sin alterar el layout a 1280px.
+  - Verificado tras el fix `sm:w-[300px]` → `md:w-[300px]` en `app/(app)/kids/[id]/page.tsx:75`: a 767px las columnas apilan (`y`=133 / `y`=509, `stacked:true`) y a 1280px el layout desktop queda igual (columnas lado a lado, derecha 300px). Screenshots: `.playwright-mcp/spec02-fix-profile-767.png` y `.playwright-mcp/spec02-fix-kids-1280.png`.
+- [x] Los screenshots a 1280px coinciden con `references/pantallas/ninos.dc.html` y `perfil-nino.dc.html`.
 
 ## Decisions
 

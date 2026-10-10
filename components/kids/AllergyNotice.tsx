@@ -5,7 +5,7 @@ export function AllergyNotice({ note }: { note?: string }) {
   if (!note) return null;
 
   return (
-    <div className="flex gap-[14px] rounded-[16px] bg-[#FBDAD6] p-[18px]">
+    <div className="flex gap-[14px] rounded-[16px] bg-[#FBDAD6] px-[18px] py-4">
       <span className="flex h-10 w-10 flex-none items-center justify-center rounded-[11px] bg-[#F4A8A0] text-white">
         <Icon name="alert" size={22} />
       </span>

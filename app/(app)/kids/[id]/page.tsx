@@ -72,7 +72,7 @@ export default async function KidProfilePage({
           />
         </div>
 
-        <div className="flex w-full flex-none flex-col gap-[14px] sm:w-[300px]">
+        <div className="flex w-full flex-none flex-col gap-[14px] md:w-[300px]">
           <Link
             href={`/kids/${kid.id}/summary`}
             className="flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-ink py-[13px] text-[15px] font-extrabold text-white"

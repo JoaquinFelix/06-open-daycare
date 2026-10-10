@@ -5,14 +5,23 @@ import { Icon } from "@/components/ui/icons";
 import { KidCard } from "@/components/kids/KidCard";
 import { kids, type Kid } from "@/data/children";
 
+// Normaliza a minúsculas y sin acentos para que "SOFIA" matchee "Sofía".
+function normalize(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 export function KidsSearch({ items = kids }: { items?: Kid[] }) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
-    const term = query.trim().toLowerCase();
+    const term = normalize(query);
     if (!term) return items;
 
-    return items.filter((kid) => kid.name.toLowerCase().includes(term));
+    return items.filter((kid) => normalize(kid.name).includes(term));
   }, [items, query]);
 
   return (
