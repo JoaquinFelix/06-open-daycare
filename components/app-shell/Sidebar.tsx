@@ -41,7 +41,10 @@ export function Sidebar({ pathname, onNavigate }: SidebarProps) {
 
       <nav className="flex flex-1 flex-col gap-1">
         {navItems.map((item) => {
-          const active = pathname === item.href;
+          // /kids/mateo también resalta "Niños"; la raíz ("/") no es prefijo de nada.
+          const active =
+            pathname === item.href ||
+            (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
           return (
             <Link

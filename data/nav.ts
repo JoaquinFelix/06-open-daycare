@@ -12,13 +12,17 @@ export type IconName =
   | "menu"
   | "close"
   | "sun"
-  | "image";
+  | "image"
+  | "search"
+  | "chevron-left"
+  | "chevron-right"
+  | "alert";
 
 export type NavItem = { href: string; label: string; icon: IconName };
 
 export const navItems: NavItem[] = [
   { href: "/", label: "Feed", icon: "home" },
-  { href: "/ninos", label: "Niños", icon: "children" },
+  { href: "/kids", label: "Niños", icon: "children" },
   { href: "/avisos", label: "Avisos", icon: "bell" },
   { href: "/mi-cuenta", label: "Mi cuenta", icon: "user" },
 ];
