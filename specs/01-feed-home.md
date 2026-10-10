@@ -96,17 +96,17 @@ Tags (valores exactos del mockup): LOGRO `#CFEBD8`/`#3E9B6C`, ACTIVIDAD `#C7E7F1
 
 ## Acceptance criteria
 
-- [ ] `npm run build` termina sin errores de TypeScript.
-- [ ] `npx eslint app components data` pasa sin errores.
-- [ ] `/` renderiza el sidebar de 248px, el encabezado "Buenas, Caro", el composer y los 3 posts del mockup.
-- [ ] Colores, tipografías (Fredoka/Nunito), radios, sombras y espaciados coinciden con `references/pantallas/feed.dc.html` a 1280px.
-- [ ] Los tags muestran el color y el punto exactos: LOGRO verde, ACTIVIDAD azul, ANUNCIO índigo.
-- [ ] El post de actividad muestra el bloque de foto placeholder (borde punteado `#DBCDBA`, alto 200px).
-- [ ] El ítem activo del sidebar corresponde a la ruta actual.
-- [ ] Por debajo de 768px el sidebar se oculta, aparece el top bar y el botón hamburguesa abre/cierra el menú.
-- [ ] Las 7 rutas placeholder responden 200 y muestran el placeholder visual.
-- [ ] `/login` no muestra el sidebar.
-- [ ] `lang="es"` y el `<title>` es "OpenDayCare".
+- [x] `npm run build` termina sin errores de TypeScript.
+- [x] `npx eslint app components data` pasa sin errores.
+- [x] `/` renderiza el sidebar de 248px, el encabezado "Buenas, Caro", el composer y los 3 posts del mockup.
+- [x] Colores, tipografías (Fredoka/Nunito), radios, sombras y espaciados coinciden con `references/pantallas/feed.dc.html` a 1280px.
+- [x] Los tags muestran el color y el punto exactos: LOGRO verde, ACTIVIDAD azul, ANUNCIO índigo.
+- [x] El post de actividad muestra el bloque de foto placeholder (borde punteado `#DBCDBA`, alto 200px).
+- [x] El ítem activo del sidebar corresponde a la ruta actual.
+- [x] Por debajo de 768px el sidebar se oculta, aparece el top bar y el botón hamburguesa abre/cierra el menú.
+- [x] Las 7 rutas placeholder responden 200 y muestran el placeholder visual.
+- [x] `/login` no muestra el sidebar.
+- [x] `lang="es"` y el `<title>` es "OpenDayCare".
 
 ## Decisions
 
