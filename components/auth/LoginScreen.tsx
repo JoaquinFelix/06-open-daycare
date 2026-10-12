@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FieldError } from "@/components/auth/FieldError";
 import { Icon } from "@/components/ui/icons";
 
 type LoginErrors = { email: boolean; password: boolean };
@@ -93,7 +94,7 @@ export function LoginScreen() {
                 value={email}
                 onChange={(event) => updateField("email", event.target.value)}
                 aria-invalid={errors.email}
-                className={`w-full rounded-[14px] border-[1.5px] bg-white px-4 py-[14px] text-[15px] text-ink outline-none placeholder:text-[#B6A99B] ${
+                className={`w-full rounded-[14px] border-[1.5px] bg-white px-4 py-[14px] text-[15px] text-ink outline-none placeholder:text-[#B6A99B] focus-visible:ring-2 focus-visible:ring-accent ${
                   errors.email ? "border-primary-deep" : "border-[#EADFD0]"
                 }`}
               />
@@ -117,7 +118,7 @@ export function LoginScreen() {
                   }
                   placeholder="••••••••"
                   aria-invalid={errors.password}
-                  className={`w-full rounded-[14px] border-[1.5px] bg-white px-4 py-[14px] pr-11 text-[15px] text-ink outline-none placeholder:text-[#B6A99B] ${
+                  className={`w-full rounded-[14px] border-[1.5px] bg-white px-4 py-[14px] pr-11 text-[15px] text-ink outline-none placeholder:text-[#B6A99B] focus-visible:ring-2 focus-visible:ring-accent ${
                     errors.password ? "border-primary-deep" : "border-[#EADFD0]"
                   }`}
                 />
@@ -158,13 +159,5 @@ export function LoginScreen() {
         </div>
       </div>
     </div>
-  );
-}
-
-function FieldError() {
-  return (
-    <p className="mt-2 text-[13px] font-bold text-primary-deep">
-      Este campo es obligatorio.
-    </p>
   );
 }
