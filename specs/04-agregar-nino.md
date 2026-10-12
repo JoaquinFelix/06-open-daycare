@@ -1,6 +1,6 @@
 # SPEC 04 — Modal "Agregar niño" desde /kids
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 02
 > **Date:** 2026-10-12
 > **Objective:** Replicar `references/pantallas/agregar-nino.dc.html` en `/kids/new` como ventana modal (ruta mantenida, abierta desde el botón "+ Agregar niño" de `/kids`), con campos obligatorios (nombre completo, fecha de nacimiento con máscara `dd/mm/aaaa` y sala de 3 opciones), que al guardar crea el niño, regresa a `/kids` y refresca la lista agrupada por sala; "Cancelar" no hace ningún cambio.
@@ -96,22 +96,22 @@ No se persiste nada fuera del proceso servidor y no hay tokens de diseño nuevos
 
 ## Acceptance criteria
 
-- [ ] `npm run build` y `npx tsc --noEmit` terminan sin errores.
-- [ ] `npx eslint app components data lib` pasa sin errores.
-- [ ] El botón "+ Agregar niño" de `/kids` navega a `/kids/new`, que muestra la tarjeta modal centrada (max-width 520px) con header "Cancelar" / "Agregar niño" / "Guardar", fiel a `agregar-nino.dc.html` a 1280px.
-- [ ] El formulario muestra NOMBRE COMPLETO, FECHA DE NACIMIENTO, SALA (select: Soles por defecto, Jardines, Valles), ALERGIAS (ETIQUETAS) y NOTAS MÉDICAS.
-- [ ] Enviar con nombre vacío muestra "Este campo es obligatorio." bajo el campo con borde `#C5503A` y no navega; escribir limpia el error.
-- [ ] Enviar con fecha vacía muestra el error de obligatorio; con fecha mal formada (`"12/13/4500"`, `"31/02/2020"`) o futura (`"01/01/2099"`) muestra "Ingresá una fecha válida y no futura." bajo el campo y no navega.
-- [ ] El campo de fecha aplica la máscara mientras se escribe: `"1"` → `"1/"`, `"120320"` → `"12/03/20"`, y no acepta más de 8 dígitos.
-- [ ] Enviar con sala vacía (select en blanco forzado) muestra el error de obligatorio.
-- [ ] Con los 3 campos obligatorios válidos, "Guardar" crea el niño, navega a `/kids` y la lista lo muestra en la sección de su sala (Soles / Jardines / Valles) sin recargar la página.
-- [ ] El contador del rótulo "SALA X · N niños" refleja el nuevo total de esa sala.
-- [ ] El niño creado muestra en la tarjeta su inicial, nombre, "edad · sin padres vinculados" y badge `VINCULAR`; si se escribieron alergias, badge de alergia con la primera alergia en mayúsculas.
-- [ ] Clic en la tarjeta del niño creado navega a `/kids/<id>` y el perfil renderiza sus datos (nacimiento en formato `dd mmm yyyy`, sala e ingreso del mes actual).
-- [ ] Al crear un segundo niño con el mismo nombre, el `id` recibe sufijo `-2` y ambas tarjetas navegan a perfiles distintos.
-- [ ] "Cancelar" (o el botón atrás del navegador) vuelve a `/kids` sin crear ni modificar nada.
-- [ ] Refrescar `/kids/new` en el navegador (hard reload) muestra el formulario vacío sin errores, y un hard reload de `/kids` mantiene los 8 niños seed si no se creó ninguno.
-- [ ] `references/` no fue modificado.
+- [x] `npm run build` y `npx tsc --noEmit` terminan sin errores.
+- [x] `npx eslint app components data lib` pasa sin errores.
+- [x] El botón "+ Agregar niño" de `/kids` navega a `/kids/new`, que muestra la tarjeta modal centrada (max-width 520px) con header "Cancelar" / "Agregar niño" / "Guardar", fiel a `agregar-nino.dc.html` a 1280px.
+- [x] El formulario muestra NOMBRE COMPLETO, FECHA DE NACIMIENTO, SALA (select: Soles por defecto, Jardines, Valles), ALERGIAS (ETIQUETAS) y NOTAS MÉDICAS.
+- [x] Enviar con nombre vacío muestra "Este campo es obligatorio." bajo el campo con borde `#C5503A` y no navega; escribir limpia el error.
+- [x] Enviar con fecha vacía muestra el error de obligatorio; con fecha mal formada (`"12/13/4500"`, `"31/02/2020"`) o futura (`"01/01/2099"`) muestra "Ingresá una fecha válida y no futura." bajo el campo y no navega.
+- [x] El campo de fecha aplica la máscara mientras se escribe: `"1"` → `"1/"`, `"120320"` → `"12/03/20"`, y no acepta más de 8 dígitos.
+- [x] Enviar con sala vacía (select en blanco forzado) muestra el error de obligatorio.
+- [x] Con los 3 campos obligatorios válidos, "Guardar" crea el niño, navega a `/kids` y la lista lo muestra en la sección de su sala (Soles / Jardines / Valles) sin recargar la página.
+- [x] El contador del rótulo "SALA X · N niños" refleja el nuevo total de esa sala.
+- [x] El niño creado muestra en la tarjeta su inicial, nombre, "edad · sin padres vinculados" y badge `VINCULAR`; si se escribieron alergias, badge de alergia con la primera alergia en mayúsculas.
+- [x] Clic en la tarjeta del niño creado navega a `/kids/<id>` y el perfil renderiza sus datos (nacimiento en formato `dd mmm yyyy`, sala e ingreso del mes actual).
+- [x] Al crear un segundo niño con el mismo nombre, el `id` recibe sufijo `-2` y ambas tarjetas navegan a perfiles distintos.
+- [x] "Cancelar" (o el botón atrás del navegador) vuelve a `/kids` sin crear ni modificar nada.
+- [x] Refrescar `/kids/new` en el navegador (hard reload) muestra el formulario vacío sin errores, y un hard reload de `/kids` mantiene los 8 niños seed si no se creó ninguno.
+- [x] `references/` no fue modificado.
 
 ## Decisions
 
