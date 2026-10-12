@@ -86,6 +86,7 @@ export function ActivateAccountScreen() {
             <input
               id="activate-code"
               type="text"
+              autoComplete="off"
               value={code}
               onChange={(event) => updateField("code", event.target.value)}
               aria-invalid={errors.code}
@@ -106,6 +107,7 @@ export function ActivateAccountScreen() {
             <input
               id="activate-email"
               type="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => updateField("email", event.target.value)}
               aria-invalid={errors.email}
@@ -127,6 +129,7 @@ export function ActivateAccountScreen() {
               <input
                 id="activate-password"
                 type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
                 value={password}
                 onChange={(event) =>
                   updateField("password", event.target.value)

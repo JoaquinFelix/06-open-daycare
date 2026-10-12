@@ -91,6 +91,7 @@ export function LoginScreen() {
               <input
                 id="login-email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(event) => updateField("email", event.target.value)}
                 aria-invalid={errors.email}
@@ -112,6 +113,7 @@ export function LoginScreen() {
                 <input
                   id="login-password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   value={password}
                   onChange={(event) =>
                     updateField("password", event.target.value)
