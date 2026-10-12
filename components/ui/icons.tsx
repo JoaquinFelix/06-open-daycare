@@ -104,6 +104,10 @@ const ICONS: Record<IconName, IconDef> = {
     sw: 2.2,
     body: <path d="m9 18 6-6-6-6" />,
   },
+  "chevron-down": {
+    sw: 2.2,
+    body: <path d="m6 9 6 6 6-6" />,
+  },
   alert: {
     sw: 2.2,
     body: (

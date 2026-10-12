@@ -16,6 +16,7 @@ export type IconName =
   | "search"
   | "chevron-left"
   | "chevron-right"
+  | "chevron-down"
   | "alert"
   | "eye"
   | "eye-off";
