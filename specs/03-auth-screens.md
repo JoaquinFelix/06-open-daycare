@@ -1,6 +1,6 @@
 # SPEC 03 — Login y activación de cuenta
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-12
 > **Objective:** Replicar `references/pantallas/login.dc.html` en `/login` y `references/pantallas/activar-cuenta.dc.html` en `/activar-cuenta`, sin la sección de rol.
