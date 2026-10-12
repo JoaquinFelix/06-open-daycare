@@ -1,11 +1,14 @@
 import { KidsHeader } from "@/components/kids/KidsHeader";
-import { KidsSearch } from "@/components/kids/KidsSearch";
+import { KidsList } from "@/components/kids/KidsList";
+import { getAllKids } from "@/data/children";
 
-export default function KidsPage() {
+export default async function KidsPage() {
+  const items = getAllKids();
+
   return (
     <div className="mx-auto w-full max-w-[880px] px-10 pt-[34px] pb-20">
       <KidsHeader />
-      <KidsSearch />
+      <KidsList items={items} />
     </div>
   );
 }
