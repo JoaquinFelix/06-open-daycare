@@ -1,10 +1,42 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icons";
+
+type LoginErrors = { email: boolean; password: boolean };
 
 // Réplica de references/pantallas/login.dc.html, sin la sección "INGRESO COMO".
 export function LoginScreen() {
+  const router = useRouter();
+  const [email, setEmail] = useState("caro@opendaycare.com");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<LoginErrors>({
+    email: false,
+    password: false,
+  });
+
+  function updateField(field: keyof LoginErrors, value: string) {
+    if (field === "email") setEmail(value);
+    else setPassword(value);
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: false } : prev));
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextErrors: LoginErrors = {
+      email: email.trim() === "",
+      password: password === "",
+    };
+    if (nextErrors.email || nextErrors.password) {
+      setErrors(nextErrors);
+      return;
+    }
+    router.push("/");
+  }
+
   return (
     <div className="grid min-h-screen grid-cols-1 bg-[#FBF4EC] md:grid-cols-[1.05fr_1fr]">
       <aside className="relative flex flex-col justify-between overflow-hidden bg-[linear-gradient(155deg,#F6A98E_0%,#F2937A_45%,#EC7E62_100%)] px-6 py-9 text-white md:px-[60px] md:py-[56px]">
@@ -47,44 +79,75 @@ export function LoginScreen() {
             Ingresá para ver el día de hoy.
           </p>
 
-          <label
-            htmlFor="login-email"
-            className="mb-[9px] block text-[12px] font-bold tracking-[0.7px] text-ink-soft"
-          >
-            EMAIL
-          </label>
-          <input
-            id="login-email"
-            type="email"
-            defaultValue="caro@opendaycare.com"
-            className="mb-[18px] w-full rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-[14px] text-[15px] text-ink outline-none placeholder:text-[#B6A99B]"
-          />
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="mb-[18px]">
+              <label
+                htmlFor="login-email"
+                className="mb-[9px] block text-[12px] font-bold tracking-[0.7px] text-ink-soft"
+              >
+                EMAIL
+              </label>
+              <input
+                id="login-email"
+                type="email"
+                value={email}
+                onChange={(event) => updateField("email", event.target.value)}
+                aria-invalid={errors.email}
+                className={`w-full rounded-[14px] border-[1.5px] bg-white px-4 py-[14px] text-[15px] text-ink outline-none placeholder:text-[#B6A99B] ${
+                  errors.email ? "border-primary-deep" : "border-[#EADFD0]"
+                }`}
+              />
+              {errors.email && <FieldError />}
+            </div>
 
-          <label
-            htmlFor="login-password"
-            className="mb-2 block text-[12px] font-bold tracking-[0.7px] text-ink-soft"
-          >
-            CONTRASEÑA
-          </label>
-          <input
-            id="login-password"
-            type="password"
-            placeholder="••••••••"
-            className="mb-[10px] w-full rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-[14px] text-[15px] text-ink outline-none placeholder:text-[#B6A99B]"
-          />
+            <div className="mb-[10px]">
+              <label
+                htmlFor="login-password"
+                className="mb-2 block text-[12px] font-bold tracking-[0.7px] text-ink-soft"
+              >
+                CONTRASEÑA
+              </label>
+              <div className="relative">
+                <input
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(event) =>
+                    updateField("password", event.target.value)
+                  }
+                  placeholder="••••••••"
+                  aria-invalid={errors.password}
+                  className={`w-full rounded-[14px] border-[1.5px] bg-white px-4 py-[14px] pr-11 text-[15px] text-ink outline-none placeholder:text-[#B6A99B] ${
+                    errors.password ? "border-primary-deep" : "border-[#EADFD0]"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-label={
+                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                  }
+                  className="absolute top-1/2 right-3 -translate-y-1/2 text-ink-soft"
+                >
+                  <Icon name={showPassword ? "eye-off" : "eye"} size={19} />
+                </button>
+              </div>
+              {errors.password && <FieldError />}
+            </div>
 
-          <div className="mb-5 text-right">
-            <span className="cursor-pointer text-[13.5px] font-bold text-primary-deep">
-              ¿Olvidaste tu contraseña?
-            </span>
-          </div>
+            <div className="mb-5 text-right">
+              <span className="cursor-pointer text-[13.5px] font-bold text-primary-deep">
+                ¿Olvidaste tu contraseña?
+              </span>
+            </div>
 
-          <button
-            type="button"
-            className="block w-full rounded-[15px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] py-[15px] text-center text-[16px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,.7)]"
-          >
-            Iniciar sesión
-          </button>
+            <button
+              type="submit"
+              className="block w-full rounded-[15px] bg-[linear-gradient(180deg,#F4977E,#EE8164)] py-[15px] text-center text-[16px] font-extrabold text-white shadow-[0_10px_22px_-8px_rgba(238,129,100,.7)]"
+            >
+              Iniciar sesión
+            </button>
+          </form>
 
           <p className="mt-6 text-center text-[14.5px] text-ink-soft">
             ¿Te invitó la guardería?{" "}
@@ -95,5 +158,13 @@ export function LoginScreen() {
         </div>
       </div>
     </div>
+  );
+}
+
+function FieldError() {
+  return (
+    <p className="mt-2 text-[13px] font-bold text-primary-deep">
+      Este campo es obligatorio.
+    </p>
   );
 }
