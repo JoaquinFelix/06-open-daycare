@@ -1,3 +1,5 @@
+import { ROOMS, type Room } from "@/data/rooms";
+
 export type KidBadge = { label: string; variant: "allergy" | "link" };
 
 export type ParentStatus = "active" | "pending";
@@ -28,6 +30,14 @@ export type Kid = {
     allergyNote?: string;
     parents: Parent[];
   };
+};
+
+export type NewKidInput = {
+  name: string; // "Martina López" — obligatorio, sin espacios sobrantes
+  birthDate: string; // "dd/mm/aaaa" — obligatorio, fecha real y no futura
+  room: Room; // obligatorio, uno de ROOMS
+  allergies?: string; // "Maní, Lactosa" — opcional
+  notes?: string; // "Indicaciones, medicación…" — opcional
 };
 
 export const kids: Kid[] = [
@@ -240,6 +250,159 @@ export const kids: Kid[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Helpers puros del alta (SPEC 04, paso 2). Se mueven a lib/child-form.ts en
+// el paso 5 del plan, donde se suman la máscara y la validación de fechas.
+// ---------------------------------------------------------------------------
+
+const MONTHS_SHORT = [
+  "ene",
+  "feb",
+  "mar",
+  "abr",
+  "may",
+  "jun",
+  "jul",
+  "ago",
+  "sep",
+  "oct",
+  "nov",
+  "dic",
+];
+
+// "12/03/2020" → Date. Devuelve null si el formato o el día/mes no existen.
+export function parseDate(value: string): Date | null {
+  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value.trim());
+  if (!match) return null;
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+
+  const date = new Date(year, month - 1, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
+// 2022-03-12 → "12 mar 2022"
+export function formatBirthDate(date: Date): string {
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${day} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+// Edad completa respecto de hoy: "3 años" | "1 año"
+export function ageLabelFrom(date: Date): string {
+  const today = new Date();
+  let years = today.getFullYear() - date.getFullYear();
+  const monthDiff = today.getMonth() - date.getMonth();
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < date.getDate())
+  ) {
+    years -= 1;
+  }
+
+  return `${years} ${years === 1 ? "año" : "años"}`;
+}
+
+// "Martina López" → "martina-lopez". El slug "new" choca con la ruta /kids/new.
+export function slugifyName(name: string): string {
+  const slug = name
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug === "new" ? "nuevo" : slug;
+}
+
+// Store en memoria del proceso: sobrevive a las requests, no a reinicios.
+const createdKids: Kid[] = [];
+
+// Los 3 pares del seed, rotados por cantidad de niños creados.
+const AVATAR_PALETTES: readonly (readonly [string, string])[] = [
+  ["#A9D9E8", "#1F7A93"],
+  ["#F4B8CC", "#C44A7A"],
+  ["#B9DEC4", "#3E8B62"],
+];
+
+export function getAllKids(): Kid[] {
+  return [...kids, ...createdKids];
+}
+
+// Agrupa por sala en orden ROOMS y descarta las salas sin niños.
+export function kidsByRoom(): { room: Room; kids: Kid[] }[] {
+  const all = getAllKids();
+
+  return ROOMS.map((room) => ({
+    room,
+    kids: all.filter((kid) => kid.profile.room === room),
+  })).filter((group) => group.kids.length > 0);
+}
+
+// "mateo" ya existe en el seed, así que un homónimo arranca en "mateo-2".
+function uniqueId(base: string): string {
+  const taken = new Set(getAllKids().map((kid) => kid.id));
+  if (!taken.has(base)) return base;
+
+  let suffix = 2;
+  while (taken.has(`${base}-${suffix}`)) suffix += 1;
+  return `${base}-${suffix}`;
+}
+
+export function addChild(input: NewKidInput): Kid {
+  const name = input.name.trim().replace(/\s+/g, " ");
+  const birthDate = parseDate(input.birthDate);
+  if (!birthDate) {
+    throw new Error(`Fecha de nacimiento inválida: ${input.birthDate}`);
+  }
+
+  const allergies = input.allergies?.trim();
+  const notes = input.notes?.trim();
+  const allergyLabel = allergies
+    ? allergies.split(",")[0].trim().toUpperCase()
+    : undefined;
+
+  const [avatarBg, avatarFg] =
+    AVATAR_PALETTES[createdKids.length % AVATAR_PALETTES.length];
+
+  const now = new Date();
+
+  const kid: Kid = {
+    id: uniqueId(slugifyName(name)),
+    name,
+    initial: name.charAt(0).toUpperCase(),
+    ageLabel: ageLabelFrom(birthDate),
+    parentsLabel: "sin padres vinculados",
+    avatarBg,
+    avatarFg,
+    // Sin alergias el aviso es "VINCULAR": el niño nace sin padres.
+    badge: allergyLabel
+      ? { label: allergyLabel, variant: "allergy" }
+      : { label: "VINCULAR", variant: "link" },
+    profile: {
+      birthDate: formatBirthDate(birthDate),
+      room: input.room,
+      joinedAt: `${MONTHS_SHORT[now.getMonth()]} ${now.getFullYear()}`,
+      allergyLabel,
+      allergyNote: notes,
+      parents: [],
+    },
+  };
+
+  createdKids.push(kid);
+  return kid;
+}
+
 export function getKid(id: string): Kid | undefined {
-  return kids.find((kid) => kid.id === id);
+  return getAllKids().find((kid) => kid.id === id);
 }
