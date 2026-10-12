@@ -1,4 +1,11 @@
 import { ROOMS, type Room } from "@/data/rooms";
+import {
+  ageLabelFrom,
+  formatBirthDate,
+  MONTHS_SHORT,
+  parseDate,
+  slugifyName,
+} from "@/lib/child-form";
 
 export type KidBadge = { label: string; variant: "allergy" | "link" };
 
@@ -249,81 +256,6 @@ export const kids: Kid[] = [
     },
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Helpers puros del alta (SPEC 04, paso 2). Se mueven a lib/child-form.ts en
-// el paso 5 del plan, donde se suman la máscara y la validación de fechas.
-// ---------------------------------------------------------------------------
-
-const MONTHS_SHORT = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
-];
-
-// "12/03/2020" → Date. Devuelve null si el formato o el día/mes no existen.
-export function parseDate(value: string): Date | null {
-  const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value.trim());
-  if (!match) return null;
-
-  const day = Number(match[1]);
-  const month = Number(match[2]);
-  const year = Number(match[3]);
-
-  const date = new Date(year, month - 1, day);
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return date;
-}
-
-// 2022-03-12 → "12 mar 2022"
-export function formatBirthDate(date: Date): string {
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${day} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-// Edad completa respecto de hoy: "3 años" | "1 año"
-export function ageLabelFrom(date: Date): string {
-  const today = new Date();
-  let years = today.getFullYear() - date.getFullYear();
-  const monthDiff = today.getMonth() - date.getMonth();
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < date.getDate())
-  ) {
-    years -= 1;
-  }
-
-  return `${years} ${years === 1 ? "año" : "años"}`;
-}
-
-// "Martina López" → "martina-lopez". El slug "new" choca con la ruta /kids/new.
-export function slugifyName(name: string): string {
-  const slug = name
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  return slug === "new" ? "nuevo" : slug;
-}
 
 // Store en memoria del proceso: sobrevive a las requests, no a reinicios.
 const createdKids: Kid[] = [];
