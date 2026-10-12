@@ -16,7 +16,9 @@ export type IconName =
   | "search"
   | "chevron-left"
   | "chevron-right"
-  | "alert";
+  | "alert"
+  | "eye"
+  | "eye-off";
 
 export type NavItem = { href: string; label: string; icon: IconName };
 
