@@ -88,26 +88,27 @@ Colores de mockup usados inline (sin tokens nuevos en `app/globals.css`):
 
 ## Acceptance criteria
 
-- [ ] `npx tsc --noEmit` y `npm run build` terminan sin errores.
-- [ ] `npx eslint app components data` pasa sin errores.
-- [ ] `/login` renderiza el panel de marca con el gradiente, el logo, el titular "El día de cada niño, compartido con su familia.", el párrafo y el pie "🌿 Guardería Sala Soles".
-- [ ] `/login` muestra "Iniciar sesión", "Ingresá para ver el día de hoy.", EMAIL precargado con `caro@opendaycare.com`, CONTRASEÑA, "¿Olvidaste tu contraseña?" y el botón "Iniciar sesión".
-- [ ] `/login` no renderiza la sección "INGRESO COMO" ni los botones Personal / Familia.
-- [ ] Clic en "Iniciar sesión" con la contraseña cargada navega a `/`.
-- [ ] Clic con la contraseña vacía muestra el mensaje "Este campo es obligatorio." debajo del campo, con borde `#C5503A`, y no navega.
-- [ ] Vaciar el email y enviar también muestra ese error debajo de EMAIL.
-- [ ] Escribir en un campo con error limpia su error.
-- [ ] El toggle de ojo alterna el campo de contraseña entre `password` y `text`.
-- [ ] "Activá tu cuenta" navega a `/activar-cuenta`.
-- [ ] `/activar-cuenta` renderiza el logo, "Bienvenida a OpenDayCare", el párrafo y la tarjeta con el avatar "M" y "Mateo · Sala Soles".
-- [ ] Los campos muestran `7K4P9` y `lucia.fernandez@gmail.com`, y el consentimiento nace marcado con el check verde.
-- [ ] Clic en "Activar mi cuenta" con la contraseña cargada navega a `/`; con la contraseña vacía muestra el error y no navega.
-- [ ] "¿Ya tenés cuenta? Iniciar sesión" navega a `/login`.
-- [ ] A 1280px, `/login` y `/activar-cuenta` coinciden con `references/pantallas/login.dc.html` y `references/pantallas/activar-cuenta.dc.html`.
-- [ ] Por debajo de 768px el panel de marca se apila arriba sin el párrafo, y el formulario queda debajo.
-- [ ] `/login` no muestra el sidebar del `AppShell`.
-- [ ] Cada paso del plan termina con un resumen y la confirmación del usuario antes de pasar al siguiente.
-- [ ] El `<title>` de `/login` es "Iniciar sesión · OpenDayCare" y el de `/activar-cuenta` es "Activar cuenta · OpenDayCare".
+- [x] `npx tsc --noEmit` y `npm run build` terminan sin errores.
+- [x] `npx eslint app components data` pasa sin errores.
+- [x] `/login` renderiza el panel de marca con el gradiente, el logo, el titular "El día de cada niño, compartido con su familia.", el párrafo y el pie "🌿 Guardería Sala Soles".
+- [x] `/login` muestra "Iniciar sesión", "Ingresá para ver el día de hoy.", EMAIL precargado con `caro@opendaycare.com`, CONTRASEÑA, "¿Olvidaste tu contraseña?" y el botón "Iniciar sesión".
+- [x] `/login` no renderiza la sección "INGRESO COMO" ni los botones Personal / Familia.
+- [x] Clic en "Iniciar sesión" con la contraseña cargada navega a `/`.
+- [x] Clic con la contraseña vacía muestra el mensaje "Este campo es obligatorio." debajo del campo, con borde `#C5503A`, y no navega.
+- [x] Vaciar el email y enviar también muestra ese error debajo de EMAIL.
+- [x] Escribir en un campo con error limpia su error.
+- [x] El toggle de ojo alterna el campo de contraseña entre `password` y `text`.
+- [x] "Activá tu cuenta" navega a `/activar-cuenta`.
+- [x] `/activar-cuenta` renderiza el logo, "Bienvenida a OpenDayCare", el párrafo y la tarjeta con el avatar "M" y "Mateo · Sala Soles".
+- [x] Los campos muestran `7K4P9` y `lucia.fernandez@gmail.com`, y el consentimiento nace marcado con el check verde.
+- [x] Clic en "Activar mi cuenta" con la contraseña cargada navega a `/`; con la contraseña vacía muestra el error y no navega.
+- [x] "¿Ya tenés cuenta? Iniciar sesión" navega a `/login`.
+- [x] A 1280px, `/login` y `/activar-cuenta` coinciden con `references/pantallas/login.dc.html` y `references/pantallas/activar-cuenta.dc.html`.
+- [x] Por debajo de 768px el panel de marca se apila arriba sin el párrafo, y el formulario queda debajo.
+- [x] `/login` no muestra el sidebar del `AppShell`.
+- [x] Cada paso del plan termina con un resumen y la confirmación del usuario antes de pasar al siguiente.
+  > Validado manualmente por el usuario (criterio de proceso, no verificable desde el repo). Evidencia en git: `git log --oneline` muestra un commit por paso (Paso 1…Paso 8).
+- [x] El `<title>` de `/login` es "Iniciar sesión · OpenDayCare" y el de `/activar-cuenta` es "Activar cuenta · OpenDayCare".
 
 ## Decisions
 
