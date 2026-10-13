@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { KidNewModalShell } from "@/components/kids/KidNewModalShell";
+import { KidModalShell } from "@/components/kids/KidModalShell";
 import { AddChildForm } from "@/components/kids/AddChildForm";
 import { createChild } from "@/app/(app)/kids/new/actions";
 
@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function InterceptedNewKidPage() {
   return (
-    <KidNewModalShell>
+    <KidModalShell>
       <AddChildForm action={createChild} />
-    </KidNewModalShell>
+    </KidModalShell>
   );
 }

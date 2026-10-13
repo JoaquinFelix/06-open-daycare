@@ -47,6 +47,16 @@ export type NewKidInput = {
   notes?: string; // "Indicaciones, medicación…" — opcional
 };
 
+export const PARENT_RELATIONS = ["Mamá", "Papá", "Tutor/a"] as const;
+export type ParentRelation = (typeof PARENT_RELATIONS)[number];
+
+export type NewParentInput = {
+  kidId: string; // "mateo" — debe existir en getAllKids()
+  name: string; // "Diego Fernández" — obligatorio, sin espacios sobrantes
+  email: string; // "correo@ejemplo.com" — obligatorio, con formato válido
+  relation: ParentRelation; // obligatorio, uno de PARENT_RELATIONS
+};
+
 export const kids: Kid[] = [
   {
     id: "mateo",
@@ -267,6 +277,21 @@ const AVATAR_PALETTES: readonly (readonly [string, string])[] = [
   ["#B9DEC4", "#3E8B62"],
 ];
 
+// Colores de avatar para padres nuevos, rotados por la cantidad que ya tiene el
+// niño. El email no se persiste: no hay campo en `Parent` ni dónde mostrarlo.
+const PARENT_AVATAR_COLORS: readonly string[] = [
+  "#C9B6E8",
+  "#A9C7E8",
+  "#F2937A",
+  "#B9DEC4",
+];
+
+function parentsLabelFrom(count: number): string {
+  if (count === 0) return "sin padres vinculados";
+  if (count === 1) return "1 padre vinculado";
+  return `${count} padres vinculados`;
+}
+
 export function getAllKids(): Kid[] {
   return [...kids, ...createdKids];
 }
@@ -314,7 +339,7 @@ export function addChild(input: NewKidInput): Kid {
     name,
     initial: name.charAt(0).toUpperCase(),
     ageLabel: ageLabelFrom(birthDate),
-    parentsLabel: "sin padres vinculados",
+    parentsLabel: parentsLabelFrom(0),
     avatarBg,
     avatarFg,
     // Sin alergias el aviso es "VINCULAR": el niño nace sin padres.
@@ -333,6 +358,32 @@ export function addChild(input: NewKidInput): Kid {
 
   createdKids.push(kid);
   return kid;
+}
+
+export function addParent(input: NewParentInput): Parent | undefined {
+  const kid = getKid(input.kidId);
+  if (!kid) return undefined;
+
+  const name = input.name.trim().replace(/\s+/g, " ");
+  const { parents } = kid.profile;
+
+  const parent: Parent = {
+    name,
+    relation: input.relation,
+    statusLabel: "invitación enviada",
+    status: "pending",
+    initial: name.charAt(0).toUpperCase(),
+    avatarBg: PARENT_AVATAR_COLORS[parents.length % PARENT_AVATAR_COLORS.length],
+  };
+
+  parents.push(parent);
+  kid.parentsLabel = parentsLabelFrom(parents.length);
+
+  // El niño ya no está "sin padres vinculados": el aviso VINCULAR deja de tener
+  // sentido (no toca los badges de alergia).
+  if (kid.badge?.variant === "link") kid.badge = undefined;
+
+  return parent;
 }
 
 export function getKid(id: string): Kid | undefined {
