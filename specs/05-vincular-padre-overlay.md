@@ -12,7 +12,7 @@
 - `/kids/[id]/link-parent` deja de ser un `PlaceholderPage` y pasa a renderizar el overlay con la tarjeta del mockup (max-width 480px).
 - Intercepting route `app/(app)/@modal/(.)kids/[id]/link-parent/page.tsx`: al abrir desde el botón "Vincular otro padre" del perfil, el overlay aparece sobre el perfil (la URL cambia a `/kids/[id]/link-parent`); al cargar esa URL directo también responde 200 con el overlay. Mismo patrón que ya existe para `/kids/new`.
 - Tarjeta fiel al mockup: header con "Vincular padre", subtítulo "a {nombre del niño}" y botón X; banner informativo; campos NOMBRE DEL PADRE/MADRE y EMAIL; pills de PARENTESCO (Mamá / Papá / Tutor/a, con "Mamá" seleccionada por defecto); recuadro punteado CÓDIGO DE INVITACIÓN con el código y "Vence en 7 días"; botón "Enviar invitación".
-- Código de invitación aleatorio de 5 caracteres `[A-Z0-9]`, generado al abrir el overlay.
+- Código de invitación aleatorio de 5 caracteres `[A-Z0-9]`, generado en el server por request (una vuelta por apertura del overlay).
 - Validación en cliente y re-validación en servidor: NOMBRE y EMAIL obligatorios; EMAIL con formato válido. Escribir en un campo limpia su error. Con errores no se navega.
 - Server Action `sendParentInvite` que agrega el padre al niño en estado PENDIENTE, revalida y redirige al perfil `/kids/[id]`.
 - `addParent` en `data/children.ts` que además actualiza `parentsLabel` del niño y le quita el badge `VINCULAR` cuando pasa a tener al menos un padre.
@@ -77,7 +77,7 @@ export const INVITE_CODE_LENGTH = 5;
 // Solo para re-validar el email en cliente y servidor; no pretende ser RFC completo.
 export function isValidEmail(value: string): boolean;
 
-// Código de invitación de 5 caracteres [A-Z0-9], generado al abrir el overlay.
+// Código de invitación de 5 caracteres [A-Z0-9], generado por request en el server.
 export function randomInviteCode(): string;
 ```
 
@@ -96,7 +96,7 @@ type LinkParentErrors = Partial<Record<"name" | "email", string>>;
 Convenciones:
 
 - El error se evalúa en el submit y se limpia en cada `onChange` del campo (igual que SPEC 03 y SPEC 04).
-- El código se genera en un `useEffect` (una sola vez, ya hidratado) para no fijarlo en el prerender ni provocar hydration mismatch.
+- El `code` no es estado de cliente: lo genera `LinkParentModal` (server component) con `await connection()` y se pasa por prop. El segmento se prerenderiza estático por niño, así que sin `connection()` el código quedaría fijo en el build.
 
 Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 
@@ -119,9 +119,9 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 2. Generalizar `components/kids/KidNewModalShell.tsx` → `components/kids/KidModalShell.tsx` con prop `maxWidth?: number` (default 520) e inline style. Actualizar los usos en `app/(app)/kids/new/page.tsx` y `app/(app)/@modal/(.)kids/new/page.tsx`. Verificar: `npm run dev`, `/kids/new` sigue mostrando la tarjeta de 520px.
 3. Ampliar `data/children.ts`: `PARENT_RELATIONS`, `ParentRelation`, `NewParentInput`, `PARENT_AVATAR_COLORS` y `addParent()`. Verificar: `npx tsc --noEmit`.
 4. Crear `lib/parent-invite.ts` con `INVITE_CODE_LENGTH`, `isValidEmail()` y `randomInviteCode()`. Verificar: `npx tsc --noEmit`.
-5. Crear `components/kids/LinkParentForm.tsx` (`"use client"`): header con X, banner, los dos inputs, pills de parentesco, recuadro del código (generado en `useEffect`), estado de errores, validación en submit y botón "Enviar invitación". Recibe `action`, `kidId`, `kidName` y `kidFirstName`. Verificar: `npx tsc --noEmit`.
+5. Crear `components/kids/LinkParentForm.tsx` (`"use client"`): header con X, banner, los dos inputs, pills de parentesco, recuadro del código (recibido por prop), estado de errores, validación en submit y botón "Enviar invitación". Recibe `action`, `kidId`, `kidName`, `kidFirstName` y `code`. Verificar: `npx tsc --noEmit`.
 6. Crear `app/(app)/kids/[id]/link-parent/actions.ts` con `"use server"` y `sendParentInvite(formData)`: lee y re-valida (`kidId` existente, nombre y email no vacíos, `isValidEmail`, `relation` ∈ `PARENT_RELATIONS`); con datos inválidos redirige a `/kids/[id]/link-parent`; con datos válidos llama `addParent()`, `revalidatePath("/kids")`, `revalidatePath(\`/kids/${kidId}\`)` y `redirect(\`/kids/${kidId}\`)` (redirect fuera de try/catch). Verificar: `npx tsc --noEmit`.
-7. Reemplazar `app/(app)/kids/[id]/link-parent/page.tsx`: quitar `PlaceholderPage`, `getKid(id)` o `notFound()`, `metadata = { title: "Vincular padre · OpenDayCare" }` y renderizar `KidModalShell` (maxWidth 480) + `LinkParentForm`. Verificar: `npm run dev`, `/kids/mateo/link-parent` directo muestra el overlay.
+7. Reemplazar `app/(app)/kids/[id]/link-parent/page.tsx`: quitar `PlaceholderPage`, `getKid(id)` o `notFound()`, `metadata = { title: "Vincular padre · OpenDayCare" }` y renderizar `LinkParentModal` (componente compartido: `await connection()`, código aleatorio, `KidModalShell` maxWidth 480 + `LinkParentForm`). Verificar: `npm run dev`, `/kids/mateo/link-parent` directo muestra el overlay.
 8. Crear `app/(app)/@modal/(.)kids/[id]/link-parent/page.tsx` con el mismo contenido que el paso 7 (importando el componente compartido si conviene) para interceptar la navegación desde el perfil. Verificar: desde `/kids/mateo`, el botón "Vincular otro padre" abre el overlay sobre el perfil y la URL cambia.
 9. Verificación completa: `npm run build`, `npx tsc --noEmit`, `npx eslint app components data lib`, y con Playwright en `npm run dev`: apertura desde el perfil, validaciones, envío con datos válidos → padre PENDIENTE en el perfil, cierre con X sin cambios, carga directa de la URL, 404 con id inexistente, `/kids/new` sin regresiones y comparación por screenshot a 1280px contra `vincular-padre.dc.html`.
 
@@ -147,7 +147,7 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 
 - **Sí:** intercepting route `@modal/(.)kids/[id]/link-parent` + ruta real, mismo patrón que `/kids/new` (decisión del usuario). La navegación desde el perfil muestra el overlay sobre el perfil y la carga directa de la URL también funciona.
 - **Sí:** `addParent` sobre el store en memoria con el padre en estado PENDIENTE (decisión del usuario), consistente con el alta de niño de SPEC 04. El perfil muestra el nuevo padre al revalidar.
-- **Sí:** código de invitación aleatorio de 5 caracteres (decisión del usuario), generado en cliente en `useEffect` para no fijarlo en el prerender ni arriesgar hydration mismatch.
+- **Sí:** código de invitación aleatorio de 5 caracteres (decisión del usuario), generado en el **server** por request (`await connection()` en `LinkParentModal`) y pasado por prop. Cambio respecto de la primera redacción del spec, que lo generaba en cliente con `useEffect`: la regla `react-hooks/set-state-in-effect` lo vetaba (criterio de aceptación "eslint pasa sin errores") y, además, el segmento se prerenderiza estático por niño, así que un generador de cliente quedaría fijo en el build.
 - **Sí:** validar formato de email además de los obligatorios (decisión del usuario), con mensaje propio "Ingresá un email válido."; SPEC 03 no validaba formato y aquí sí.
 - **Sí:** PARENTESCO con "Mamá" por defecto y sin validación: siempre tiene un valor.
 - **Sí:** generalizar `KidNewModalShell` → `KidModalShell` con `maxWidth` en vez de duplicar el shell; se mantiene DRY y se conserva el aspecto de `/kids/new`.
@@ -163,7 +163,8 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 | Risk | Mitigation |
 | --- | --- |
 | El intercepting route con segmento dinámico `[id]` no matchea por `cacheComponents` | Verificar con Playwright la apertura desde el perfil y la carga directa; si no matchea, ajustar la estructura del `@modal` |
-| El código aleatorio en render inicial provoca hydration mismatch | Generarlo en `useEffect` (post-hidratación), nunca en el render del servidor |
+| El código quedaría fijo en el build por el prerender estático del segmento | `LinkParentModal` hace `await connection()`, que ancla el segmento a la request |
+| El validador dev de `cacheComponents` avisa "URL data fuera de `<Suspense>`" en las rutas de link-parent | Es una pista de performance, no un error: `npm run build` pasa y `/kids/[id]` hace lo mismo desde SPEC 02. Decisión: mantener `instant = false` documentado, sin `<Suspense>` ni `unstable_disableValidation` |
 | `revalidatePath` sobre mutaciones en memoria de objetos `const` del seed | Revalidar `/kids` y `/kids/[id]`; verificar end-to-end en `npm run dev` |
 | El perfil es estático (`generateStaticParams`) y podría no reflejar el padre nuevo | Ya declara `instant = false`; probar perfil y listado tras enviar |
 | `ParentRow` usa `key={parent.name}`: dos padres homónimos colisionan como key de React | No bloquea el flujo mock; documentado, se puede pasar la key a `name` + `relation` si molesta |

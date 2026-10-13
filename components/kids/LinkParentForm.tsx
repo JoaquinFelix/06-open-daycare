@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { FieldError } from "@/components/auth/FieldError";
 import { Icon } from "@/components/ui/icons";
 import { PARENT_RELATIONS, type ParentRelation } from "@/data/children";
-import { isValidEmail, randomInviteCode } from "@/lib/parent-invite";
+import { isValidEmail } from "@/lib/parent-invite";
 
 type Values = {
   name: string;
@@ -50,32 +50,29 @@ function validate({ name, email }: Values): FieldErrors {
   return errors;
 }
 
-// Réplica de references/pantallas/vincular-padre.dc.html. El código se genera
-// en el cliente tras la hidratación: si lo generara el servidor quedaría fijo
-// en el prerender del segmento.
+// Réplica de references/pantallas/vincular-padre.dc.html. El código de
+// invitación lo genera el server component padre (`LinkParentModal`), uno por
+// apertura: acá sólo se muestra.
 export function LinkParentForm({
   action,
   kidId,
   kidName,
   kidFirstName,
+  code,
 }: {
   action: (formData: FormData) => void | Promise<void>;
   kidId: string;
   kidName: string;
   kidFirstName: string;
+  code: string;
 }) {
   const router = useRouter();
-  const [code, setCode] = useState("");
   const [values, setValues] = useState<Values>({
     name: "",
     email: "",
     relation: PARENT_RELATIONS[0],
   });
   const [errors, setErrors] = useState<FieldErrors>({});
-
-  useEffect(() => {
-    setCode(randomInviteCode());
-  }, []);
 
   function updateField(field: keyof Values, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
