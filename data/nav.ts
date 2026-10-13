@@ -19,7 +19,9 @@ export type IconName =
   | "chevron-down"
   | "alert"
   | "eye"
-  | "eye-off";
+  | "eye-off"
+  | "send"
+  | "info";
 
 export type NavItem = { href: string; label: string; icon: IconName };
 
