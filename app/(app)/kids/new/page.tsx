@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { KidNewModalShell } from "@/components/kids/KidNewModalShell";
+import { KidModalShell } from "@/components/kids/KidModalShell";
 import { AddChildForm } from "@/components/kids/AddChildForm";
 import { createChild } from "./actions";
 
@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 // igual que agregar-nino.dc.html (fondo plano, card centrada arriba).
 export default function NewKidPage() {
   return (
-    <KidNewModalShell>
+    <KidModalShell>
       <AddChildForm action={createChild} />
-    </KidNewModalShell>
+    </KidModalShell>
   );
 }
