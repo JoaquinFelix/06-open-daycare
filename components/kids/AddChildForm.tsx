@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { FieldError } from "@/components/auth/FieldError";
 import { Icon } from "@/components/ui/icons";
@@ -52,6 +52,7 @@ export function AddChildForm({
 }: {
   action: (formData: FormData) => void | Promise<void>;
 }) {
+  const router = useRouter();
   const [values, setValues] = useState<Values>({
     name: "",
     birthDate: "",
@@ -75,6 +76,14 @@ export function AddChildForm({
     if (Object.values(nextErrors).some(Boolean)) event.preventDefault();
   }
 
+  function handleCancel() {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/kids");
+  }
+
   return (
     <form
       action={action}
@@ -83,12 +92,13 @@ export function AddChildForm({
       className="w-full"
     >
       <div className="flex items-center justify-between border-b border-line px-[26px] py-5">
-        <Link
-          href="/kids"
+        <button
+          type="button"
+          onClick={handleCancel}
           className="text-[15px] font-bold text-ink-soft hover:text-primary-strong"
         >
           Cancelar
-        </Link>
+        </button>
         <span className="font-display text-[18px] font-semibold text-ink">
           Agregar niño
         </span>
