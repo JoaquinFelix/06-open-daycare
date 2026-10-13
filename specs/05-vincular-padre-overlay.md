@@ -19,6 +19,7 @@
 - Nuevos iconos `send` e `info` en `data/nav.ts` (`IconName`) y `components/ui/icons.tsx`.
 - Generalizar `KidNewModalShell` → `KidModalShell` con prop `maxWidth` (default 520px; link-parent usa 480px).
 - `metadata` propia en la ruta real.
+- Cierre del overlay ante **cualquier** navegación (envío, `redirect()`, `Link`), con un guard de pathname en `app/(app)/@modal/layout.tsx`: al navegar hacia adelante desde una ruta interceptada Next.js conserva el contenido previo del slot y sólo `router.back()` lo limpiaba. El guard arregla de paso el overlay de `/kids/new` (SPEC 04), que tenía el mismo síntoma.
 - Responsive igual que el resto: la tarjeta no supera el ancho disponible en móvil.
 
 **Out of scope (for future specs):**
@@ -123,7 +124,8 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 6. Crear `app/(app)/kids/[id]/link-parent/actions.ts` con `"use server"` y `sendParentInvite(formData)`: lee y re-valida (`kidId` existente, nombre y email no vacíos, `isValidEmail`, `relation` ∈ `PARENT_RELATIONS`); con datos inválidos redirige a `/kids/[id]/link-parent`; con datos válidos llama `addParent()`, `revalidatePath("/kids")`, `revalidatePath(\`/kids/${kidId}\`)` y `redirect(\`/kids/${kidId}\`)` (redirect fuera de try/catch). Verificar: `npx tsc --noEmit`.
 7. Reemplazar `app/(app)/kids/[id]/link-parent/page.tsx`: quitar `PlaceholderPage`, `getKid(id)` o `notFound()`, `metadata = { title: "Vincular padre · OpenDayCare" }` y renderizar `LinkParentModal` (componente compartido: `await connection()`, código aleatorio, `KidModalShell` maxWidth 480 + `LinkParentForm`). Verificar: `npm run dev`, `/kids/mateo/link-parent` directo muestra el overlay.
 8. Crear `app/(app)/@modal/(.)kids/[id]/link-parent/page.tsx` con el mismo contenido que el paso 7 (importando el componente compartido si conviene) para interceptar la navegación desde el perfil. Verificar: desde `/kids/mateo`, el botón "Vincular otro padre" abre el overlay sobre el perfil y la URL cambia.
-9. Verificación completa: `npm run build`, `npx tsc --noEmit`, `npx eslint app components data lib`, y con Playwright en `npm run dev`: apertura desde el perfil, validaciones, envío con datos válidos → padre PENDIENTE en el perfil, cierre con X sin cambios, carga directa de la URL, 404 con id inexistente, `/kids/new` sin regresiones y comparación por screenshot a 1280px contra `vincular-padre.dc.html`.
+9. **Agregado en la verificación:** crear `app/(app)/@modal/layout.tsx` (`"use client"`) con un guard de `usePathname()` que sólo renderiza el slot en `/kids/new` y `/kids/[id]/link-parent`, para que el overlay se cierre al navegar hacia adelante desde la ruta interceptada (ver Decisions). Verificar: envío del form y clic en un `Link` del sidebar cierran el overlay.
+10. Verificación completa: `npm run build`, `npx tsc --noEmit`, `npx eslint app components data lib`, y con Playwright en `npm run dev`: apertura desde el perfil, validaciones, envío con datos válidos → padre PENDIENTE en el perfil, cierre con X sin cambios, carga directa de la URL, 404 con id inexistente, `/kids/new` sin regresiones y comparación por screenshot a 1280px contra `vincular-padre.dc.html`.
 
 ## Acceptance criteria
 
@@ -156,12 +158,13 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 - **No:** persistir el email del padre. `Parent` no cambia y el email no se muestra; sólo se valida.
 - **No:** envío real de correo ni verificación del código de invitación: no hay backend.
 - **No:** `useActionState` para errores del servidor: la validación de cliente cubre los mensajes y el servidor re-valida y redirige (defensa en profundidad, igual que SPEC 04).
-- **No:** crear un segundo layout `@modal` o tocar el `modal` slot existente: el slot y su `default.tsx` ya sirven.
+- **Sí (cambio detectado en el paso 9):** tocar el slot `@modal`, agregando `app/(app)/@modal/layout.tsx` con un guard de `usePathname()`. La primera redacción decía **No** porque "el slot y su `default.tsx` ya sirven": la verificación demostró que no. Al navegar hacia adelante desde una ruta interceptada (el `redirect()` de la Server Action y cualquier `Link`) Next.js conserva el contenido previo del slot y sólo `router.back()` lo limpiaba — limitación conocida (vercel/next.js #49662, #65099, #71795). Decisión del usuario: guard de pathname, que además arregla `/kids/new` (SPEC 04).
 
 ## Risks
 
 | Risk | Mitigation |
 | --- | --- |
+| El overlay no se cierra al navegar hacia adelante desde la ruta interceptada: el `redirect()` de la Server Action dejaba la tarjeta tapando el perfil (mismo síntoma en `/kids/new`) | Guard de pathname en `@modal/layout.tsx`; verificado con Playwright en el envío, en un `Link` del sidebar y en la apertura de `/kids/new` |
 | El intercepting route con segmento dinámico `[id]` no matchea por `cacheComponents` | Verificar con Playwright la apertura desde el perfil y la carga directa; si no matchea, ajustar la estructura del `@modal` |
 | El código quedaría fijo en el build por el prerender estático del segmento | `LinkParentModal` hace `await connection()`, que ancla el segmento a la request |
 | El validador dev de `cacheComponents` avisa "URL data fuera de `<Suspense>`" en las rutas de link-parent | Es una pista de performance, no un error: `npm run build` pasa y `/kids/[id]` hace lo mismo desde SPEC 02. Decisión: mantener `instant = false` documentado, sin `<Suspense>` ni `unstable_disableValidation` |
