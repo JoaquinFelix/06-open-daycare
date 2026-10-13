@@ -1,6 +1,6 @@
 # SPEC 05 — Overlay "Vincular padre" desde el perfil del niño
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 02, SPEC 04
 > **Date:** 2026-10-13
 > **Objective:** Replicar `references/pantallas/vincular-padre.dc.html` en `/kids/[id]/link-parent` como superposición (overlay) lanzada desde el botón "Vincular otro padre" del perfil, con validación de nombre y email, un código de invitación aleatorio de 5 caracteres y el alta del padre en estado PENDIENTE (memoria) al enviar.
@@ -129,21 +129,21 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 
 ## Acceptance criteria
 
-- [ ] `npm run build` y `npx tsc --noEmit` terminan sin errores.
-- [ ] `npx eslint app components data lib` pasa sin errores.
-- [ ] Desde `/kids/mateo`, clic en "Vincular otro padre" abre el overlay sobre el perfil con la tarjeta de 480px y la URL pasa a `/kids/mateo/link-parent`.
-- [ ] El overlay muestra "Vincular padre", "a Mateo Fernández", el botón X, el banner "Solo verá el feed de Mateo.", NOMBRE DEL PADRE/MADRE, EMAIL, PARENTESCO, CÓDIGO DE INVITACIÓN, "Vence en 7 días" y el botón "Enviar invitación".
-- [ ] El código mostrado coincide con `^[A-Z0-9]{5}$` y no es el valor fijo `7K4P9`; al reabrir el overlay se genera un código nuevo.
-- [ ] "Mamá" aparece seleccionada por defecto; clic en "Papá" o "Tutor/a" mueve la selección (queda una sola pill activa).
-- [ ] Enviar con NOMBRE vacío muestra "Este campo es obligatorio." con borde `#C5503A` y no navega; escribir en el campo limpia el error.
-- [ ] Enviar con EMAIL vacío muestra "Este campo es obligatorio."; con email inválido (`"abc"`, `"a@"`) muestra "Ingresá un email válido." y no navega.
-- [ ] Con nombre y email válidos, "Enviar invitación" navega a `/kids/mateo` y la tarjeta "PADRES VINCULADOS" muestra el nuevo padre con su relación, "invitación enviada" y pill PENDIENTE.
-- [ ] El rótulo del niño en `/kids` refleja el nuevo conteo (`"1 padre vinculado"` / `"N padres vinculados"`) y Valentina pierde el badge `VINCULAR` tras vincular un padre.
-- [ ] La X cierra el overlay y vuelve al perfil sin agregar ni modificar nada.
-- [ ] Cargar directo `/kids/mateo/link-parent` responde 200 con el overlay; `/kids/nope/link-parent` devuelve 404.
-- [ ] `/kids/new` sigue abriendo su overlay de 520px sin regresiones.
-- [ ] A 1280px el overlay coincide con `references/pantallas/vincular-padre.dc.html`.
-- [ ] `references/` no fue modificado.
+- [x] `npm run build` y `npx tsc --noEmit` terminan sin errores.
+- [x] `npx eslint app components data lib` pasa sin errores.
+- [x] Desde `/kids/mateo`, clic en "Vincular otro padre" abre el overlay sobre el perfil con la tarjeta de 480px y la URL pasa a `/kids/mateo/link-parent`.
+- [x] El overlay muestra "Vincular padre", "a Mateo Fernández", el botón X, el banner "Solo verá el feed de Mateo.", NOMBRE DEL PADRE/MADRE, EMAIL, PARENTESCO, CÓDIGO DE INVITACIÓN, "Vence en 7 días" y el botón "Enviar invitación".
+- [x] El código mostrado coincide con `^[A-Z0-9]{5}$` y no es el valor fijo `7K4P9`; al reabrir el overlay se genera un código nuevo.
+- [x] "Mamá" aparece seleccionada por defecto; clic en "Papá" o "Tutor/a" mueve la selección (queda una sola pill activa).
+- [x] Enviar con NOMBRE vacío muestra "Este campo es obligatorio." con borde `#C5503A` y no navega; escribir en el campo limpia el error.
+- [x] Enviar con EMAIL vacío muestra "Este campo es obligatorio."; con email inválido (`"abc"`, `"a@"`) muestra "Ingresá un email válido." y no navega.
+- [x] Con nombre y email válidos, "Enviar invitación" navega a `/kids/mateo` y la tarjeta "PADRES VINCULADOS" muestra el nuevo padre con su relación, "invitación enviada" y pill PENDIENTE.
+- [x] El rótulo del niño en `/kids` refleja el nuevo conteo (`"1 padre vinculado"` / `"N padres vinculados"`) y Valentina pierde el badge `VINCULAR` tras vincular un padre.
+- [x] La X cierra el overlay y vuelve al perfil sin agregar ni modificar nada.
+- [x] Cargar directo `/kids/mateo/link-parent` responde 200 con el overlay; `/kids/nope/link-parent` devuelve 404.
+- [x] `/kids/new` sigue abriendo su overlay de 520px sin regresiones.
+- [x] A 1280px el overlay coincide con `references/pantallas/vincular-padre.dc.html`.
+- [x] `references/` no fue modificado.
 
 ## Decisions
 
