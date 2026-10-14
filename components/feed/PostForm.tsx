@@ -37,12 +37,20 @@ export function PostForm({ action, kids }: PostFormProps) {
     description?: string;
   }>({});
 
+  // Los IDs de los niños que se muestran como chips — "Toda la sala" los
+  // selecciona o deselecciona a todos.
+  const kidIds = kids.map((kid) => kid.id);
+
   function toggleRecipient(id: string) {
     setErrors((prev) => ({ ...prev, recipients: undefined }));
     setRecipients((prev) => {
       if (id === ALL_ROOM) {
-        return prev.includes(ALL_ROOM) ? [] : [ALL_ROOM];
+        // Seleccionar "Toda la sala" marca todos los niños; deseleccionar
+        // deja la lista vacía.
+        return prev.includes(ALL_ROOM) ? [] : [...kidIds, ALL_ROOM];
       }
+      // Deseleccionar un niño individual cuando "Toda la sala" está activo
+      // también quita "Toda la sala".
       const withoutAll = prev.filter((r) => r !== ALL_ROOM);
       return withoutAll.includes(id)
         ? withoutAll.filter((r) => r !== id)
@@ -76,7 +84,7 @@ export function PostForm({ action, kids }: PostFormProps) {
   return (
     <form action={action} onSubmit={handleSubmit}>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-line px-[26px] py-5">
+      <div className="flex items-center justify-between border-b border-line px-[26px] py-4">
         <button
           type="button"
           onClick={() => router.back()}
@@ -96,10 +104,10 @@ export function PostForm({ action, kids }: PostFormProps) {
       </div>
 
       {/* Contenido */}
-      <div className="px-[26px] py-6">
+      <div className="px-[26px] py-5">
         {/* PARA */}
         <span className={SECTION_LABEL}>PARA</span>
-        <div className="mb-[22px] flex flex-wrap gap-[9px]">
+        <div className="mb-[16px] flex flex-wrap gap-[9px]">
           {kids.map((kid) => {
             const selected = recipients.includes(kid.id);
             return (
@@ -157,7 +165,7 @@ export function PostForm({ action, kids }: PostFormProps) {
 
         {/* TIPO */}
         <span className={SECTION_LABEL}>TIPO</span>
-        <div className="mb-[22px] flex flex-wrap gap-[9px]">
+        <div className="mb-[16px] flex flex-wrap gap-[9px]">
           {POST_TYPES.map((t) => (
             <button
               key={t.id}
@@ -185,7 +193,7 @@ export function PostForm({ action, kids }: PostFormProps) {
             setErrors((prev) => ({ ...prev, description: undefined }));
           }}
           placeholder="Contá cómo le fue hoy…"
-          className="mb-[22px] min-h-[120px] w-full resize-y rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-3.5 text-[15px] leading-normal text-ink outline-none placeholder:text-[#B6A99B] focus-visible:ring-2 focus-visible:ring-accent"
+          className="mb-[16px] min-h-[96px] w-full resize-y rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-3 text-[15px] leading-normal text-ink outline-none placeholder:text-[#B6A99B] focus-visible:ring-2 focus-visible:ring-accent"
         />
         {errors.description && <FieldError message={errors.description} />}
 
