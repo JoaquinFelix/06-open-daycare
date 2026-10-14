@@ -1,6 +1,24 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { addPost, type FeedTag } from "@/data/feed";
+import { getKid } from "@/data/children";
+
+const ALL_ROOM = "toda-sala";
+
+const POST_TYPE_IDS = [
+  "comida",
+  "siesta",
+  "actividad",
+  "logro",
+  "animo",
+  "foto",
+  "anuncio",
+] as const;
+
+function isPostType(value: string): value is FeedTag {
+  return (POST_TYPE_IDS as readonly string[]).includes(value);
+}
 
 // El FormData puede traer un File o no traer la clave: sólo interesan strings.
 function readText(formData: FormData, key: string): string {
@@ -16,6 +34,17 @@ function readAllText(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
+// "toda-sala" → "Para: toda la sala"; ["mateo","sofia"] → "Para: familia de Mateo, Sofía"
+function audienceFrom(recipients: string[]): string {
+  if (recipients.includes(ALL_ROOM)) return "Para: toda la sala";
+
+  const names = recipients
+    .map((id) => getKid(id)?.name.split(" ")[0])
+    .filter((name): name is string => name !== undefined);
+
+  return `Para: familia de ${names.join(", ")}`;
+}
+
 export async function createPost(formData: FormData) {
   const recipients = readAllText(formData, "recipients");
   const type = readText(formData, "type");
@@ -28,8 +57,12 @@ export async function createPost(formData: FormData) {
     redirect("/crear-publicacion");
   }
 
-  // Por ahora no hay store de posts: el formulario valida y redirige al feed.
-  // Cuando haya persistencia, acá se guarda el post con recipients, type y
-  // description.
+  addPost({
+    tag: isPostType(type) ? type : "actividad",
+    audience: audienceFrom(recipients),
+    body: description,
+  });
+
+  // redirect() lanza una excepción de control: va fuera de try/catch.
   redirect("/");
 }

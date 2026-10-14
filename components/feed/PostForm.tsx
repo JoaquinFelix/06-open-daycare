@@ -193,7 +193,9 @@ export function PostForm({ action, kids }: PostFormProps) {
             setErrors((prev) => ({ ...prev, description: undefined }));
           }}
           placeholder="Contá cómo le fue hoy…"
-          className="mb-[16px] min-h-[96px] w-full resize-y rounded-[14px] border-[1.5px] border-[#EADFD0] bg-white px-4 py-3 text-[15px] leading-normal text-ink outline-none placeholder:text-[#B6A99B] focus-visible:ring-2 focus-visible:ring-accent"
+          className={`mb-[16px] min-h-[96px] w-full resize-y rounded-[14px] border-[1.5px] bg-white px-4 py-3 text-[15px] leading-normal text-ink outline-none placeholder:text-[#B6A99B] focus-visible:ring-2 focus-visible:ring-accent ${
+            errors.description ? "border-primary-deep" : "border-[#EADFD0]"
+          }`}
         />
         {errors.description && <FieldError message={errors.description} />}
 

@@ -1,7 +1,7 @@
 import { Composer } from "@/components/feed/Composer";
 import { FeedHeader } from "@/components/feed/FeedHeader";
 import { PostCard } from "@/components/feed/PostCard";
-import { feedPosts } from "@/data/feed";
+import { getAllFeedPosts } from "@/data/feed";
 
 export default function FeedPage() {
   return (
@@ -18,7 +18,7 @@ export default function FeedPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {feedPosts.map((post) => (
+        {getAllFeedPosts().map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
       </div>
