@@ -58,3 +58,4 @@ export const feedPosts: FeedPost[] = [
     comments: 0,
   },
 ];
+
