@@ -1,24 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { addPost, type FeedTag } from "@/data/feed";
-import { getKid } from "@/data/children";
-
-const ALL_ROOM = "toda-sala";
-
-const POST_TYPE_IDS = [
-  "comida",
-  "siesta",
-  "actividad",
-  "logro",
-  "animo",
-  "foto",
-  "anuncio",
-] as const;
-
-function isPostType(value: string): value is FeedTag {
-  return (POST_TYPE_IDS as readonly string[]).includes(value);
-}
 
 // El FormData puede traer un File o no traer la clave: sólo interesan strings.
 function readText(formData: FormData, key: string): string {
@@ -34,20 +16,8 @@ function readAllText(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
-// "toda-sala" → "Para: toda la sala"; ["mateo","sofia"] → "Para: familia de Mateo, Sofía"
-function audienceFrom(recipients: string[]): string {
-  if (recipients.includes(ALL_ROOM)) return "Para: toda la sala";
-
-  const names = recipients
-    .map((id) => getKid(id)?.name.split(" ")[0])
-    .filter((name): name is string => name !== undefined);
-
-  return `Para: familia de ${names.join(", ")}`;
-}
-
 export async function createPost(formData: FormData) {
   const recipients = readAllText(formData, "recipients");
-  const type = readText(formData, "type");
   const description = readText(formData, "description");
 
   // Re-validación en servidor (defensa en profundidad): el cliente ya bloquea
@@ -57,12 +27,7 @@ export async function createPost(formData: FormData) {
     redirect("/crear-publicacion");
   }
 
-  addPost({
-    tag: isPostType(type) ? type : "actividad",
-    audience: audienceFrom(recipients),
-    body: description,
-  });
-
+  // Sin persistencia en este spec: el formulario sólo valida y vuelve al feed.
   // redirect() lanza una excepción de control: va fuera de try/catch.
   redirect("/");
 }

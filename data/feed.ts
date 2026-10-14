@@ -1,6 +1,6 @@
 import type { IconName } from "./nav";
 
-export type FeedTag = "comida" | "siesta" | "actividad" | "logro" | "animo" | "foto" | "anuncio";
+export type FeedTag = "logro" | "actividad" | "anuncio";
 
 // Los posts de niño llevan initial; el anuncio lleva icon y sin initial.
 export type FeedAuthor = {
@@ -59,35 +59,3 @@ export const feedPosts: FeedPost[] = [
   },
 ];
 
-// Store en memoria del proceso: sobrevive a las requests, no a reinicios.
-const createdPosts: FeedPost[] = [];
-
-export type NewPostInput = {
-  tag: FeedTag;
-  audience: string;
-  body: string;
-};
-
-export function addPost(input: NewPostInput): FeedPost {
-  const now = new Date();
-  const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-  const post: FeedPost = {
-    id: `post-created-${createdPosts.length + 1}`,
-    tag: input.tag,
-    author: { name: "Caro", initial: "C" },
-    time,
-    authorNote: "publicado por vos",
-    audience: input.audience,
-    body: input.body,
-    likes: 0,
-    comments: 0,
-  };
-
-  createdPosts.unshift(post);
-  return post;
-}
-
-export function getAllFeedPosts(): FeedPost[] {
-  return [...createdPosts, ...feedPosts];
-}

@@ -1,6 +1,6 @@
 # SPEC 06 — Overlay "Nueva publicación" desde el sidebar
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 01
 > **Date:** 2026-10-13
 > **Objective:** Replicar `references/pantallas/crear-publicacion.dc.html` en `/crear-publicacion` como superposición (overlay) lanzada desde el botón "Nueva publicación" del sidebar, con secciones PARA, TIPO, DESCRIPCIÓN y FOTOS, y cierre del overlay ante cualquier navegación.
@@ -59,16 +59,17 @@ Colores del mockup usados inline (sin tokens nuevos en `app/globals.css`):
 
 ## Acceptance criteria
 
-- [ ] `npm run build` y `npx tsc --noEmit` terminan sin errores.
-- [ ] `npx eslint app components data lib` pasa sin errores.
-- [ ] Desde `/`, clic en "Nueva publicación" del sidebar abre el overlay sobre el feed con la tarjeta de 580px y la URL pasa a `/crear-publicacion`.
-- [ ] El overlay muestra "Cancelar", "Nueva publicación", "Publicar", PARA con chips de Mateo/Sofía/Benjamín y "Toda la sala", TIPO con los 7 colores, DESCRIPCIÓN con placeholder "Contá cómo le fue hoy...", FOTOS con placeholder y "Agregar".
-- [ ] Clic en un chip de PARA o TIPO alterna su selección visualmente.
-- [ ] "Cancelar" cierra el overlay y vuelve al feed sin enviar.
-- [ ] Cargar directo `/crear-publicacion` responde 200 con el overlay.
-- [ ] El envío con datos válidos navega a `/` (por ahora sin persistencia).
-- [ ] A 1280px el overlay coincide con `references/pantallas/crear-publicacion.dc.html`.
-- [ ] `references/` no fue modificado.
+- [x] `npm run build` y `npx tsc --noEmit` terminan sin errores.
+- [x] `npx eslint app components data lib` pasa sin errores.
+- [x] Desde `/`, clic en "Nueva publicación" del sidebar abre el overlay sobre el feed con la tarjeta de 580px y la URL pasa a `/crear-publicacion`.
+- [x] El overlay muestra "Cancelar", "Nueva publicación", "Publicar", PARA con chips de Mateo/Sofía/Benjamín y "Toda la sala", TIPO con los 7 colores, DESCRIPCIÓN con placeholder "Contá cómo le fue hoy...", FOTOS con placeholder y "Agregar".
+- [x] Clic en un chip de PARA o TIPO alterna su selección visualmente.
+- [x] "Cancelar" cierra el overlay y vuelve al feed sin enviar.
+- [x] Cargar directo `/crear-publicacion` responde 200 con el overlay.
+- [x] El envío con datos válidos navega a `/` (por ahora sin persistencia).
+  - Evidencia: Playwright (dev): con chip Mateo + descripción válidos, clic "Publicar" → URL `http://localhost:3000/`, overlay desmontado; recarga de `/` → feed con sólo los 3 posts estáticos, sin rastro del post de prueba (verificado con `browser_find` y `innerText`). `createPost` (`app/(app)/crear-publicacion/actions.ts`) sólo valida y redirige; se eliminó el store en memoria (`addPost`/`getAllFeedPosts` en `data/feed.ts`) y se revirtió `FeedTag` a sus 3 valores originales. Verificado también con `npx tsc --noEmit`, `npx eslint app components data lib` y `npm run build` (OK).
+- [x] A 1280px el overlay coincide con `references/pantallas/crear-publicacion.dc.html`.
+- [x] `references/` no fue modificado.
 
 ## Decisions
 
