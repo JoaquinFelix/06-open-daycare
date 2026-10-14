@@ -7,7 +7,11 @@ import { usePathname } from "next/navigation";
 // conserva el contenido previo del slot (limitación conocida, vercel/next.js
 // #49662 / #71795) y sólo `router.back()` lo limpiaría. Este guard cierra el
 // overlay ante cualquier navegación: envío del form, Link o redirect.
-const MODAL_ROUTES = [/^\/kids\/new$/, /^\/kids\/[^/]+\/link-parent$/];
+const MODAL_ROUTES = [
+  /^\/kids\/new$/,
+  /^\/kids\/[^/]+\/link-parent$/,
+  /^\/crear-publicacion$/,
+];
 
 export default function ModalLayout({
   children,
