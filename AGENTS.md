@@ -38,17 +38,38 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Tailwind 4 no usa `tailwind.config`: se conecta vía el loader `@tailwindcss/turbopack` en
   `next.config.ts` + `@import "tailwindcss"` y los tokens `@theme inline` en `app/globals.css`.
 
+## Supabase
+
+- Proyecto `ytbnpptjvpyusmfsccet`. El **schema de la base** está en `../07-DB-Schema`
+  (referencia `docs` de `opencode.json`): diccionario de tablas, ENUMs y convenciones. Todo lo que
+  se persiste va en **inglés**; las etiquetas visibles se traducen en la UI (español).
+- Credenciales: `SUPABASE_DB_PASSWORD` en `.env` (plantilla en `.env.template`, ya ignorado por
+  git). Nunca commitear `.env` ni hardcodear secretos.
+- Antes de tocar la DB (tablas, columnas, migraciones, RLS, índices, SQL) **cargá la skill
+  `supabase-postgres-best-practices`** y para cualquier tarea de Supabase cargá `supabase`.
+  Supabase cambia seguido: verificá contra el changelog y la doc actual antes de implementar.
+- Toda tabla en un schema expuesto (`public`) debe tener RLS habilitado con policies acordes al
+  modelo de acceso. Verificá cada cambio con una query real, no lo asumas.
+
 ## MCPs
 
 - Playwright (screenshots, navegador): todo output va a la carpeta `.playwright-mcp/`
   (ya ignorada en `.gitignore` con `.playwright-mcp/*`).
 - context7: usar este MCP para traer la documentación actualizada del framework antes de codear
   APIs de Next/React.
+- supabase: MCP remoto configurado en `~/.config/opencode/opencode.json` (project_ref
+  `ytbnpptjvpyusmfsccet`). Usalo para inspeccionar tablas, leer logs y aplicar migraciones. Antes
+  de cambiar el schema, inspeccioná las tablas existentes y revisá los advisories de seguridad.
 
 ## Skills
 
-- `spec` y `spec-impl` instalados vía `skills-lock.json` (fuente: `klerith/fernando-skills`) para
-  desarrollo de features guiado por specs.
+- `.agents/skills/` — skills del proyecto:
+  - `spec` y `spec-impl` (fuente `klerith/fernando-skills`, vía `skills-lock.json`): desarrollo de
+    features guiado por specs.
+  - `supabase`: cualquier tarea de Supabase (DB, Auth, Realtime, Storage, Edge Functions, RLS,
+    clientes `supabase-js`/`@supabase/ssr`, CLI, MCP, debugging).
+  - `supabase-postgres-best-practices`: reglas de Postgres (schema, migraciones, RLS, índices,
+    performance, concurrencia). Cargala **antes** de escribir o modificar SQL/schema.
 
 ## Agentes
 
