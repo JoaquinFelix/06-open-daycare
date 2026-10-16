@@ -16,7 +16,7 @@
     }
   },
   "references": {
-    "docs": {
+    "DB-Schema": {
       "path": "../07-DB-Schema",
       "description": "Esto es un schema de base de datos, tablas,columas y referencias"
     }
