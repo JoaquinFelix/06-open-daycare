@@ -50,6 +50,13 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   Supabase cambia seguido: verificá contra el changelog y la doc actual antes de implementar.
 - Toda tabla en un schema expuesto (`public`) debe tener RLS habilitado con policies acordes al
   modelo de acceso. Verificá cada cambio con una query real, no lo asumas.
+- **Todo cambio de schema** pasa por una migración versionada: creá el archivo
+  `supabase/migrations/<YYYYMMDDHHMMSS>_nombre_corto.sql` (commiteable en git, fuente de
+  verdad del SQL) y aplicalo con `apply_migration` del MCP. Después renombrá el archivo al
+  `version` que asignó el servidor para mantener el formato `<timestamp>_name.sql`. Nunca
+  corras SQL de schema ad-hoc sin dejar su migración en el repo (tablas, columnas, RLS,
+  índices, funciones, triggers, seeds iniciales). Las correcciones de datos aisladas (un
+  `UPDATE` puntual, arreglar filas) sí pueden ir directo por `execute_sql`, sin migración.
 
 ## MCPs
 

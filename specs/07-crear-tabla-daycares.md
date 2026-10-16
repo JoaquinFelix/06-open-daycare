@@ -1,6 +1,6 @@
 # SPEC 07 — Primera tabla `daycares` en Supabase vía migración
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** ninguna (primer spec de base de datos)
 > **Date:** 2026-10-16
 > **Objective:** Crear la tabla `public.daycares` (name, address, created_at, updated_at, is_active) en el proyecto Supabase mediante una migración versionada en git y aplicada con el MCP, con RLS habilitado sin policies y 4 filas semilla.
@@ -78,16 +78,26 @@ Convenciones:
 
 ## Acceptance criteria
 
-- [ ] Existe `supabase/migrations/<version>_create_daycares.sql` en el repo, con el prefijo de 14 dígitos del `version` remoto.
-- [ ] `list_migrations()` (MCP) incluye `create_daycares` y su `version` coincide con el prefijo del archivo local.
-- [ ] `list_tables({ schemas: ["public"], verbose: true })` muestra `daycares` con `id` (uuid, PK, default `gen_random_uuid()`), `name` (text, not null), `address` (text, nullable), `created_at` (timestamptz, default `now()`), `updated_at` (timestamptz, default `now()`) e `is_active` (boolean, not null, default `true`).
-- [ ] `select name, address, is_active from public.daycares` devuelve exactamente 4 filas, todas con dirección cargada e `is_active = true`, incluyendo `Guardería Sala Soles`.
-- [ ] `pg_class.relrowsecurity` es `true` para `daycares` y `pg_policies` no tiene filas para `daycares`.
-- [ ] `set role authenticated; select count(*) from public.daycares;` devuelve 0 filas (RLS activo sin policies).
-- [ ] `get_advisors("security")` no reporta `daycares` como tabla de `public` sin RLS.
-- [ ] El SQL aplicado en Supabase es idéntico al del archivo local (mismo contenido).
-- [ ] `npx tsc --noEmit` y `npx eslint app` siguen pasando sin errores.
-- [ ] Ningún archivo de `app/`, `components/`, `data/`, `lib/` ni `references/` fue modificado.
+- [x] Existe `supabase/migrations/<version>_create_daycares.sql` en el repo, con el prefijo de 14 dígitos del `version` remoto.
+      > Evidencia: `supabase/migrations/20261016190141_create_daycares.sql` existe, es tracked (`git status --porcelain` limpio, sin `??`), prefijo `20261016190141` (14 dígitos) == `version` remota.
+- [x] `list_migrations()` (MCP) incluye `create_daycares` y su `version` coincide con el prefijo del archivo local.
+      > Evidencia: `list_migrations()` → `{ version: "20261016190141", name: "create_daycares" }` == prefijo del archivo.
+- [x] `list_tables({ schemas: ["public"], verbose: true })` muestra `daycares` con `id` (uuid, PK, default `gen_random_uuid()`), `name` (text, not null), `address` (text, nullable), `created_at` (timestamptz, default `now()`), `updated_at` (timestamptz, default `now()`) e `is_active` (boolean, not null, default `true`).
+      > Evidencia: `list_tables` verbose muestra `public.daycares`, `rls_enabled: true`, `primary_keys: ["id"]`; confirmado contra `information_schema.columns`: `id` uuid NO/null default `gen_random_uuid()`, `name` text NO, `address` text YES, `created_at`/`updated_at` timestamptz NO default `now()`, `is_active` boolean NO default `true`.
+- [x] `select name, address, is_active from public.daycares` devuelve exactamente 4 filas, todas con dirección cargada e `is_active = true`, incluyendo `Guardería Sala Soles`.
+      > Evidencia: 4 filas — Guardería Los Girasoles / Guardería Pequeños Pasos / Guardería Sala Soles / Jardín Infantil Arcoíris, todas con `address` no nulo e `is_active: true`.
+- [x] `pg_class.relrowsecurity` es `true` para `daycares` y `pg_policies` no tiene filas para `daycares`.
+      > Evidencia: `select relrowsecurity from pg_class where relname = 'daycares'...` → `[{ "relrowsecurity": true }]`; `select * from pg_policies where tablename = 'daycares'` → `[]`.
+- [x] `set role authenticated; select count(*) from public.daycares;` devuelve 0 filas (RLS activo sin policies).
+      > Evidencia: `set role authenticated; select count(*) as count from public.daycares; reset role;` → `[{ "count": 0 }]`.
+- [x] `get_advisors("security")` no reporta `daycares` como tabla de `public` sin RLS.
+      > Evidencia: el único finding sobre `daycares` es el lint `rls_enabled_no_policy` (INFO: "Table `public.daycares` has RLS enabled, but no policies exist") — reporta RLS **habilitado**, no ausente; no aparece ningún lint de "tabla pública sin RLS" para `daycares`. (Discrepancia de redacción: el paso 4 del Implementation plan pide "sin avisos sobre daycares", más estricto que este criterio y sí incumplido por `rls_enabled_no_policy` — ver reporte del verificador.)
+- [x] El SQL aplicado en Supabase es idéntico al del archivo local (mismo contenido).
+      > Evidencia: `md5(statements[1])` remoto = `f41d44b52c5b27657c6100adac80bdcd` == md5 del contenido del archivo local (`supabase_migrations.schema_migrations`, versión `20261016190141`); única diferencia: el archivo local tiene un `\n` final que el texto remoto no incluye.
+- [x] `npx tsc --noEmit` y `npx eslint app` siguen pasando sin errores.
+      > Evidencia: `npx tsc --noEmit` → exit 0 (`TSC_OK`); `npx eslint app` → exit 0 (`ESLINT_OK`).
+- [x] Ningún archivo de `app/`, `components/`, `data/`, `lib/` ni `references/` fue modificado.
+      > Evidencia: `git status --porcelain` y `git diff --stat` sin salida (working tree limpio antes de esta edición del spec); `git status --porcelain -- app components data lib references supabase specs` → vacío, exit 0.
 
 ## Decisions
 
