@@ -30,7 +30,7 @@ La relación pedida es 1:N: un daycare tiene muchos usuarios y cada usuario pert
 - Trigger `AFTER INSERT` en `auth.users` (signup automático).
 - Las otras 4 enums (`relationship_type`, `invitation_status`, `post_type`, `child_status`) y las otras 11 tablas del diccionario.
 - Policies de `daycares`, grants de lectura de `daycares` y cualquier join desde la app.
-- Cliente Supabase en Next.js (`@supabase/ssr`, `lib/supabase/`, types TS), login/logout en la UI y migración de los mock de `data/*.ts`.
+- Cliente Supabase en Next.js (`@supabase/ssr`, `utils/supabase/`, types TS), login/logout en la UI y migración de los mock de `data/*.ts`.
 - Seed de padres, admins o usuarios en otras guarderías.
 - Modificar `app/`, `components/`, `data/`, `lib/` ni `references/`.
 

@@ -58,6 +58,44 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   índices, funciones, triggers, seeds iniciales). Las correcciones de datos aisladas (un
   `UPDATE` puntual, arreglar filas) sí pueden ir directo por `execute_sql`, sin migración.
 
+### Cliente en la app (`@supabase/ssr` + `supabase-js`)
+
+- Paquetes instalados: `@supabase/ssr` (0.12.x) y `@supabase/supabase-js` (2.118.x). Toda
+  lectura/escritura desde la app pasa por estos clientes contra la Data API (PostgREST): nunca
+  abrir una conexión Postgres directa ni usar `pg` desde Next.js. El DDL y las migraciones
+  siguen yendo por MCP/CLI, no por el cliente.
+- Variables de entorno: `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` son
+  públicas (van al bundle); `SUPABASE_SERVICE_ROLE_KEY` es solo server-side (scripts de seed) y
+  **bypassa RLS**: nunca en el cliente ni en código que llegue al navegador.
+- Clientes en `utils/supabase/`:
+  - `client.ts` — `createBrowserClient`, solo para Client Components (`createClient()`).
+  - `server.ts` — `createServerClient` para Server Components, Server Actions y Route Handlers.
+    Recibe el cookie store: `createClient(await cookies())`.
+  - `middleware.ts` — refresco de sesión por request, invocado desde `proxy.ts` (raíz). En
+    Next.js 16 `middleware.ts` se llama `proxy.ts`: no renombrar ni mover.
+  - `database.types.ts` — tipos generados del schema `public`.
+- Reglas:
+  - Un cliente nuevo por request; no cachearlo en un módulo ni compartirlo entre requests.
+  - `utils/supabase/server.ts` no se importa desde Client Components; en el navegador solo
+    `utils/supabase/client.ts`.
+  - Identidad server-side con `supabase.auth.getClaims()` (valida el JWT y refresca el token);
+    no usar `getSession()` para autorizar.
+  - En `utils/supabase/middleware.ts` no meter código entre `createServerClient` y
+    `getClaims()`; y no reemplazar el `NextResponse` del proxy sin copiar cookies y headers, o
+    se rompe la sesión (y un CDN podría cachear un `Set-Cookie`).
+  - La publishable key es pública: la seguridad real es RLS. Toda tabla nueva necesita RLS +
+    policies antes de consultarse desde la app; el filtrado por usuario/daycare lo hace la DB,
+    no el cliente.
+- Tipos generados: los clientes usan el genérico `<Database>`
+  (`createBrowserClient<Database>`, `createServerClient<Database>`) importado de
+  `utils/supabase/database.types.ts`, en lugar de castear filas. El archivo es generado por
+  la CLI (byte-idéntico al output, sin cabecera propia) y **nunca se edita a mano**: se
+  regenera con `npm run types:supabase` después de **cada migración**, lo que requiere
+  `SUPABASE_ACCESS_TOKEN` en `.env` o `npx supabase login`. La versión de PostgREST del
+  proyecto está hardcodeada en `Database.__InternalSupabase.PostgrestVersion`. El comando
+  corre por `scripts/gen-supabase-types.mjs`, que solo sobrescribe el archivo si la CLI
+  terminó bien.
+
 ## MCPs
 
 - Playwright (screenshots, navegador): todo output va a la carpeta `.playwright-mcp/`
