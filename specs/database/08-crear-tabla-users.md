@@ -1,6 +1,6 @@
 # SPEC 08 — Tabla `users` y enums de usuario en Supabase
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 07
 > **Date:** 2026-10-26
 > **Objective:** Crear en Supabase los enums `user_role`/`user_status` y la tabla `public.users` (muchos usuarios por daycare, con RLS por fila y por daycare) más un usuario staff de prueba autenticable, mediante una migración versionada y un script de seed re-ejecutable.
@@ -166,22 +166,22 @@ El UUID del perfil se toma del usuario creado por Auth en tiempo de ejecución; 
 
 ## Acceptance criteria
 
-- [ ] `supabase/migrations/<version>_create_users.sql` existe y su prefijo de 14 dígitos coincide con el `version` de `create_users` en `list_migrations()`.
-- [ ] `list_tables({ schemas: ["public"], verbose: true })` muestra `public.users` con las 10 columnas, tipos, nullability y defaults de la tabla de Data model.
-- [ ] `pg_enum` devuelve exactamente `staff, parent, admin` para `user_role` y `pending, active` para `user_status`.
-- [ ] `users.daycare_id` es `NOT NULL`, FK a `daycares(id)` con `ON DELETE RESTRICT`; `users.id` no tiene FK a `auth.users`.
-- [ ] Existe el índice `users_daycare_id_idx` sobre `users(daycare_id)`.
-- [ ] `pg_class.relrowsecurity` es `true` para `users` y `pg_policies` lista las 3 policies con los comandos y roles esperados.
-- [ ] Con JWT simulado del staff, `select * from public.users` devuelve su fila y las del mismo daycare; una fila temporal de otro daycare no aparece.
-- [ ] Con JWT simulado de un UUID sin perfil, `select * from public.users` devuelve 0 filas.
-- [ ] `set role anon; select * from public.users;` falla con `permission denied`.
-- [ ] Con JWT simulado del staff, `update public.users set full_name = ...` afecta 1 fila y actualiza `updated_at` sin enviarlo; `update ... set role = 'admin'` falla por falta de grant de columna.
-- [ ] `auth.users` contiene `fmjoaquin@gmail.com` con `email_confirmed_at` no nulo y `public.users` contiene exactamente 1 perfil con `role = 'staff'`, `status = 'active'`, `full_name = 'Staff de Prueba'`, `daycare_id` = Sala Soles y ambos booleanos en `true`.
-- [ ] `POST /auth/v1/token?grant_type=password` con email/password devuelve 200 y un `access_token`.
-- [ ] Ejecutar `npm run seed:staff` dos veces deja 1 usuario en `auth.users` y 1 fila en `public.users`.
-- [ ] `npx tsc --noEmit` y `npx eslint app` pasan sin errores.
-- [ ] `get_advisors("security")` no reporta findings de severidad ERROR/WARN sobre `public.users`, sus policies o las funciones de `private`.
-- [ ] Ningún archivo de `app/`, `components/`, `data/`, `lib/` ni `references/` fue modificado.
+- [x] `supabase/migrations/<version>_create_users.sql` existe y su prefijo de 14 dígitos coincide con el `version` de `create_users` en `list_migrations()`.
+- [x] `list_tables({ schemas: ["public"], verbose: true })` muestra `public.users` con las 10 columnas, tipos, nullability y defaults de la tabla de Data model.
+- [x] `pg_enum` devuelve exactamente `staff, parent, admin` para `user_role` y `pending, active` para `user_status`.
+- [x] `users.daycare_id` es `NOT NULL`, FK a `daycares(id)` con `ON DELETE RESTRICT`; `users.id` no tiene FK a `auth.users`.
+- [x] Existe el índice `users_daycare_id_idx` sobre `users(daycare_id)`.
+- [x] `pg_class.relrowsecurity` es `true` para `users` y `pg_policies` lista las 3 policies con los comandos y roles esperados.
+- [x] Con JWT simulado del staff, `select * from public.users` devuelve su fila y las del mismo daycare; una fila temporal de otro daycare no aparece.
+- [x] Con JWT simulado de un UUID sin perfil, `select * from public.users` devuelve 0 filas.
+- [x] `set role anon; select * from public.users;` falla con `permission denied`.
+- [x] Con JWT simulado del staff, `update public.users set full_name = ...` afecta 1 fila y actualiza `updated_at` sin enviarlo; `update ... set role = 'admin'` falla por falta de grant de columna.
+- [x] `auth.users` contiene `fmjoaquin@gmail.com` con `email_confirmed_at` no nulo y `public.users` contiene exactamente 1 perfil con `role = 'staff'`, `status = 'active'`, `full_name = 'Staff de Prueba'`, `daycare_id` = Sala Soles y ambos booleanos en `true`.
+- [x] `POST /auth/v1/token?grant_type=password` con email/password devuelve 200 y un `access_token`.
+- [x] Ejecutar `npm run seed:staff` dos veces deja 1 usuario en `auth.users` y 1 fila en `public.users`.
+- [x] `npx tsc --noEmit` y `npx eslint app` pasan sin errores.
+- [x] `get_advisors("security")` no reporta findings de severidad ERROR/WARN sobre `public.users`, sus policies o las funciones de `private`.
+- [x] Ningún archivo de `app/`, `components/`, `data/`, `lib/` ni `references/` fue modificado.
 
 ## Decisions
 
