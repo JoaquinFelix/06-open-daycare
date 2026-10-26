@@ -78,6 +78,11 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   - `supabase-postgres-best-practices`: reglas de Postgres (schema, migraciones, RLS, índices,
     performance, concurrencia). Cargala **antes** de escribir o modificar SQL/schema.
 
+## Especificaciones
+
+- Cualquier archivo de especificación relacionado con **base de datos** (tablas, columnas, migraciones, RLS, índices, funciones, triggers, seeds, esquemas) debe crearse en `specs/database/`.
+- Las demás especificaciones van en `specs/` según corresponda.
+
 ## Agentes
 
 - `spec-checker` (`.opencode/agents/spec-checker.md`) — subagente que verifica los criterios de
