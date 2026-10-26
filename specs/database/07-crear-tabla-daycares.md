@@ -23,7 +23,7 @@ Hasta ahora todo el estado vive en memoria del proceso servidor (`data/*.ts`) y 
 
 - Cualquier otra tabla del diccionario (`users`, `rooms`, `children`, `parent_children`, `invitations`, `posts`, ...).
 - Policies de RLS y grants de la Data API para `anon` / `authenticated`: llegan con el spec de auth/usuarios.
-- Cliente Supabase en la app (`@supabase/ssr`, `NEXT_PUBLIC_SUPABASE_URL`/keys en `.env`, types TS, `lib/supabase/`).
+- Cliente Supabase en la app (`@supabase/ssr`, `NEXT_PUBLIC_SUPABASE_URL`/keys en `.env`, types TS, `utils/supabase/`).
 - Supabase CLI local (`supabase init`, `db push`): el patrón del repo es MCP + archivos locales.
 - Seed de salas, niños o usuarios.
 - Modificar código de la app (`app/`, `components/`, `data/`, `lib/`) ni `references/`.
