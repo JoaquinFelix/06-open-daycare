@@ -1,6 +1,6 @@
 # SPEC 07 � Autenticaci�n real con Supabase y protecci�n de rutas
 
-> **Status:** Approved
+> **Status:** Implemented
 > **Depends on:** SPEC 03
 > **Date:** 2026-10-26
 > **Objective:** Hacer funcional el login con email y password usando Supabase Auth, proteger todas las rutas excepto /login y /activar-cuenta, redirigir correctamente seg�n estado de sesi�n y a�adir cierre de sesi�n desde el sidebar.
