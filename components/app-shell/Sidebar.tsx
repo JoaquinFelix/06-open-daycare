@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icons";
 import { navItems } from "@/data/nav";
+import { signOut } from "@/app/actions/auth";
 
 type SidebarProps = {
   pathname: string;
@@ -78,14 +79,15 @@ export function Sidebar({ pathname, onNavigate }: SidebarProps) {
               Maestra · Soles
             </span>
           </span>
-          <Link
-            href="/login"
-            onClick={onNavigate}
-            title="Cerrar sesión"
-            className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-cream text-ink-soft hover:text-primary"
-          >
-            <Icon name="logout" size={16} />
-          </Link>
+          <form action={signOut}>
+            <button
+              type="submit"
+              title="Cerrar sesión"
+              className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-cream text-ink-soft hover:text-primary"
+            >
+              <Icon name="logout" size={16} />
+            </button>
+          </form>
         </div>
       </div>
     </div>
