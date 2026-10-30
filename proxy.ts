@@ -10,10 +10,10 @@ export const config = {
   matcher: [
     /*
      * Corre en todas las rutas excepto:
-     * - api (route handlers)
      * - _next/static, _next/image (assets)
-     * - archivos con extensión (favicon.ico, sitemap.xml, robots.txt, etc.)
+     * - favicon.ico
+     * Un asset nuevo de public/ que deba verse sin sesión hay que sumarlo acá.
      */
-    "/((?!api|_next/static|_next/image|.*\\..*).*)",
+    "/((?!_next/static/|_next/image$|favicon\\.ico$).*)",
   ],
 };

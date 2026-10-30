@@ -23,11 +23,13 @@ export function LoginScreen() {
     signIn,
     { error: null },
   );
+  const [authErrorDismissed, setAuthErrorDismissed] = useState(false);
 
   function updateField(field: keyof LoginErrors, value: string) {
     if (field === "email") setEmail(value);
     else setPassword(value);
     setErrors((prev) => (prev[field] ? { ...prev, [field]: false } : prev));
+    setAuthErrorDismissed(true);
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -46,6 +48,7 @@ export function LoginScreen() {
       return;
     }
     setErrors({ email: false, password: false });
+    setAuthErrorDismissed(false);
   }
 
   return (
@@ -158,7 +161,7 @@ export function LoginScreen() {
               </span>
             </div>
 
-            {state.error && (
+            {state.error && !authErrorDismissed && !pending && (
               <div className="mb-4 text-center text-[14px] font-semibold text-primary-deep">
                 {state.error}
               </div>

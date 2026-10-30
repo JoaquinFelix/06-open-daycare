@@ -56,17 +56,25 @@ type LoginFormState = {
 
 ## Acceptance criteria
 
-- [ ] Solo /login y /activar-cuenta son accesibles sin sesi�n. Cualquier otra ruta redirige a /login si no hay sesi�n.
-- [ ] Si hay sesi�n activa y se accede a /login o /activar-cuenta, se redirige a /.
-- [ ] Login con credenciales correctas redirige a /.
-- [ ] Login con credenciales incorrectas muestra "Email o contrase�a incorrectos" y no redirige.
-- [ ] Al escribir en los campos tras error de auth, el mensaje se limpia.
-- [ ] Validaci�n de campos vac�os de SPEC 03 sigue funcionando.
-- [ ] Bot�n de logout en sidebar cierra sesi�n y redirige a /login.
-- [ ] Tras logout, rutas privadas redirigen a /login.
-- [ ] Protecci�n usa proxy.ts + utils/supabase/middleware.ts con supabase.auth.getClaims() sin c�digo entre createServerClient y getClaims().
-- [ ] Cookies de sesi�n se preservan correctamente.
-- [ ] npx tsc --noEmit y npx eslint app components utils proxy.ts pasan sin errores.
+- [x] Solo /login y /activar-cuenta son accesibles sin sesi�n. Cualquier otra ruta redirige a /login si no hay sesi�n.
+- [x] Si hay sesi�n activa y se accede a /login o /activar-cuenta, se redirige a /.
+- [x] Login con credenciales correctas redirige a /.
+- [x] Login con credenciales incorrectas muestra "Email o contrase�a incorrectos" y no redirige.
+- [x] Al escribir en los campos tras error de auth, el mensaje se limpia.
+- [x] Validaci�n de campos vac�os de SPEC 03 sigue funcionando.
+- [x] Bot�n de logout en sidebar cierra sesi�n y redirige a /login.
+- [x] Tras logout, rutas privadas redirigen a /login.
+- [x] Protecci�n usa proxy.ts + utils/supabase/middleware.ts con supabase.auth.getClaims() sin c�digo entre createServerClient y getClaims().
+- [x] Cookies de sesi�n se preservan correctamente.
+- [x] npx tsc --noEmit y npx eslint app components utils proxy.ts pasan sin errores.
+
+**Verification notes** (2026-10-30, rama spec-07-auth-real, HEAD aa427ba + fixes sin commit). Criterios 5, 7 y 10 se verificaron contra `npm run dev` apuntando a un doble local de Supabase Auth en localhost, con credenciales inventadas; nada salio de la maquina. Pasa por el codigo real de la app y de @supabase/ssr, pero el login contra el Supabase real NO se repitio tras los fixes.
+
+- Criterio 1: pasa, sin excepciones de rutas. El matcher de proxy.ts ahora excluye solo `_next/static/`, `_next/image` y `favicon.ico`. Contra `npm run start`, sin sesion, /, /apifoo, /api, /api/foo, /api/foo/bar (tambien POST), /kids, /kids/mateo, /mi-cuenta, /avisos, /no-existe, /foo.bar, /kids/a.b, /kids/mateo.json, /mi-cuenta.x, /robots.txt, /sitemap.xml y /file.svg responden 307 a /login; /login, /activar-cuenta, /favicon.ico y los assets de /_next/static/ responden 200. Consecuencia: los archivos de public/ tambien exigen sesion; un asset que deba verse sin sesion hay que excluirlo en el matcher. Con sesion, /foo.bar y /api/foo responden 404.
+- Criterio 5: pasa. Tras un login incorrecto, escribir en email y en password borra el mensaje, y cada nuevo intento incorrecto lo vuelve a mostrar. Un registro con MutationObserver no mostro el mensaje en ningun estado pending, asi que no hay parpadeo.
+- Criterio 7: pasa. A 390px, con clics reales en el drawer, cerrar sesion lleva a /login y borra la cookie sb-localhost-auth-token, sin el aviso "form is not connected". En escritorio tambien funciona (boton accionado por script).
+- Criterio 10: pasa. Con token vencido, GET /login y GET /activar-cuenta responden 307 a / con Set-Cookie de la sesion refrescada, Cache-Control `private, no-cache, no-store, must-revalidate, max-age=0`, Expires y Pragma, sin headers x-middleware-*. Control: GET / responde 200 con Set-Cookie y sin x-middleware-*; alli Cache-Control es `no-store` y Set-Cookie llega dos veces con la misma cookie.
+- Regresion, contra el doble local: login correcto lleva a /, /login con sesion redirige a /, y la validacion de campos vacios marca email y password.
 
 ## Decisions
 

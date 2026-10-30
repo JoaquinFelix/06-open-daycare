@@ -82,7 +82,6 @@ export function Sidebar({ pathname, onNavigate }: SidebarProps) {
           <form action={signOut}>
             <button
               type="submit"
-              onClick={onNavigate}
               title="Cerrar sesión"
               className="flex h-8 w-8 flex-none items-center justify-center rounded-[10px] bg-cream text-ink-soft hover:text-primary"
             >

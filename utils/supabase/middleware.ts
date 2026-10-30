@@ -14,6 +14,7 @@ export const createClient = async (request: NextRequest) => {
       headers: request.headers,
     },
   });
+  let sessionHeaders: Record<string, string> = {};
 
   const supabase = createServerClient<Database>(
     supabaseUrl!,
@@ -24,6 +25,7 @@ export const createClient = async (request: NextRequest) => {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet, headers) {
+          sessionHeaders = headers;
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           supabaseResponse = NextResponse.next({
             request,
@@ -52,18 +54,28 @@ export const createClient = async (request: NextRequest) => {
     (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
 
-  if (isPublicPath && hasSession) {
+  // Un redirect debe conservar lo que dejó setAll. No se copian todos los headers
+  // de supabaseResponse: x-middleware-next y x-middleware-request-* no van acá.
+  const redirectTo = (destination: string) => {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = destination;
     url.search = "";
-    return NextResponse.redirect(url);
+    const response = NextResponse.redirect(url);
+    supabaseResponse.cookies
+      .getAll()
+      .forEach((cookie) => response.cookies.set(cookie));
+    Object.entries(sessionHeaders).forEach(([key, value]) =>
+      response.headers.set(key, value)
+    );
+    return response;
+  };
+
+  if (isPublicPath && hasSession) {
+    return redirectTo("/");
   }
 
   if (!isPublicPath && !hasSession) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.search = "";
-    return NextResponse.redirect(url);
+    return redirectTo("/login");
   }
 
   return supabaseResponse;
